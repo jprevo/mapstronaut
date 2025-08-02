@@ -2,7 +2,7 @@
 
 Mapstronaut is a full-featured JavaScript object mapper.
 
-![Tests 197/197](https://img.shields.io/badge/tests-197/197-green)
+![Tests 218/218](https://img.shields.io/badge/tests-218/218-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
@@ -18,6 +18,7 @@ npm i mapstronaut
 - Advanced rules capabilities
 - Automaps properties matching in both source and target (with type checking)
 - Built in Typescript
+- Fully tested
 
 ## Usage
 
@@ -75,21 +76,6 @@ const result = mapObject(structure, astronaut, target);
 
 Using the same `astronaut` object as above :
 
-### Filter example
-
-```javascript
-const structure = [
-  {
-    source: "mission.name",
-    target: "moonMission",
-    filter: (data, source) => source.mission.destination === "Moon",
-  },
-];
-
-const result = mapObject(structure, astronaut);
-// { "moonMission": "Apollo 11" }
-```
-
 ### Transform example
 
 ```javascript
@@ -103,6 +89,21 @@ const structure = [
 
 const result = mapObject(structure, astronaut);
 // { "currentAge": 95 }
+```
+
+### Filter example
+
+```javascript
+const structure = [
+  {
+    source: "mission",
+    target: "marsMission",
+    filter: (mission) => mission.destination === "Mars",
+  }
+];
+
+const result = mapObject(structure, astronaut);
+// { "id": 12345, ....  } // marsMission is not present
 ```
 
 ### Async mapping example
@@ -133,3 +134,5 @@ const result = await mapObjectAsync(structure, astronaut);
 ## Licence
 
 MIT
+
+Initially Built by Jonathan Prevost
