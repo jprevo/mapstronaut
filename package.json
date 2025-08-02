@@ -38,6 +38,7 @@
     "@types/node": "^24.1.0",
     "mocha": "^11.7.1",
     "prettier": "3.6.2",
+    "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {
