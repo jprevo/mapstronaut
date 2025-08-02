@@ -70,12 +70,12 @@ When adding a new feature or updating an existing one, use the following workflo
 - target properties should be specified using Outpath internal library
 - each rule can have a filter, which is a function (possibly async) that return a boolean indicating if the mapping for this rule should be done. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third
 - it should be possible to map to object and classes
-- it should be possible to map from any type (string, Array, object, number, etc)
+- not implemented -- it should be possible to map from any type (string, Array, object, number, etc)
 - it should be possible to add an optional "target" argument, that Mapstronaut will update instead of creating an empty object
-- an optional `transform` function (possibly async) can be given for each rule, for "manual" mapping. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third.
+- not implemented -- an optional `transform` function (possibly async) can be given for each rule, for "manual" mapping. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third.
 - an optional `defaultValue` can be given for each rule, to use when the data is null or undefined
 - an optional `constant` can be given for each rule. When constant is defined, the `source` is not required, otherwise it is.
-- an optional `failsOn` function (possibly async) can be given for each rule, if it returns false a descriptive error will be thrown and the mapping stopped
+- not implemented -- an optional `failsOn` function (possibly async) can be given for each rule, if it returns false a descriptive error will be thrown and the mapping stopped
 
 ## API
 
@@ -107,7 +107,6 @@ const options = mapper.getOptions(); // also setOptions
 const structure = mapper.getStructure(); // also setStructure
 
 // for each possible option, add getsetters
-mapper.useCache = true;
 mapper.automap = false; // etc
 ```
 

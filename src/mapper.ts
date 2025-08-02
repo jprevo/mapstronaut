@@ -92,7 +92,19 @@ export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> {
 
     // Handle constant values
     if (ruleObj.constant !== undefined) {
-      this.outpath.write(target, ruleObj.target, ruleObj.constant);
+      // Apply filter to constant values if present
+      if (ruleObj.filter && !ruleObj.filter(ruleObj.constant, source, target)) {
+        return;
+      }
+
+      let finalValue = ruleObj.constant;
+
+      // Apply transform to constant values if present
+      if (ruleObj.transform) {
+        finalValue = ruleObj.transform(ruleObj.constant, source, target);
+      }
+
+      this.outpath.write(target, ruleObj.target, finalValue);
       return;
     }
 
@@ -104,6 +116,11 @@ export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     const jsonPath = this.normalizeJsonPath(ruleObj.source);
     const data = this.extractData(source, jsonPath);
 
+    // Apply filter early - if filter returns false, skip this rule entirely
+    if (ruleObj.filter && !ruleObj.filter(data, source, target)) {
+      return;
+    }
+
     // Use defaultValue if data is null or undefined
     let valueToMap = data;
     if (
@@ -113,7 +130,12 @@ export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       valueToMap = ruleObj.defaultValue;
     }
 
-    // Apply skipNull and skipUndefined rules after default value processing
+    // Apply transform function if present
+    if (ruleObj.transform) {
+      valueToMap = ruleObj.transform(valueToMap, source, target);
+    }
+
+    // Apply skipNull and skipUndefined rules after transform processing
     if (valueToMap === null && this.options.skipNull) {
       return;
     }
