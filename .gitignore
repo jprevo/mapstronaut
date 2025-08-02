@@ -1,3 +1,6 @@
+# Coverage
+coverage
+
 # Logs
 logs
 *.log
@@ -76,3 +79,6 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# AI
+.claude

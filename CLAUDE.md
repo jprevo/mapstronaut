@@ -13,6 +13,7 @@ uses jsonpath-plus as its core dependency for object path traversal and mapping 
 - **Test**: `npm run test` - Runs Mocha tests from src/test/\*_/_.ts
 - **Format**: `npm run format` - Formats source code using Prettier, YOU MUST use this command after you finish all your
   developments to keep a clean code environment
+- **Coverage**: `npm run coverage` - Get coverage for the project - should always be above 95%
 
 ## Architecture
 
