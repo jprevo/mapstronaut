@@ -21,9 +21,45 @@ npm i mapstronaut
 
 ## Usage
 
+### JsonPath+
+
 ### Automapping
 
-### JsonPath+
+Automapping automatically maps properties that exist in both source and target objects, including mapping from plain objects to class instances:
+
+```typescript
+import { mapObject } from 'mapstronaut';
+
+// Target spacecraft class
+class Spacecraft {
+  constructor(
+    public missionName: string = "",
+    public captain: string = "Unknown",
+    public status: string = "Preparing"
+  ) {}
+}
+
+// Source data from a space mission API (plain object)
+const missionData = {
+  missionName: "Apollo 11",
+  launchDate: new Date("1969-07-16"),
+  crew: 3,
+  payload: "Lunar Module"
+};
+
+const spacecraft = new Spacecraft("", "Neil Armstrong", "Ready");
+
+// Only properties that exist in both source and target will be mapped
+// Empty structure [] relies on automapping only
+const result = mapObject([], missionData, spacecraft, { automap: true });
+
+console.log(result.missionName); // "Apollo 11" (mapped from source)
+console.log(result.captain);     // "Neil Armstrong" (preserved from target)
+console.log(result.status);      // "Ready" (preserved from target)
+// crew, launchDate, and payload properties are not mapped since they don't exist in target
+```
+
+Automapping is enabled by default.
 
 ### Advanced examples
 

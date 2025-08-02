@@ -3,6 +3,7 @@ import JSONPath from "jsonpath-plus";
 export type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
+  automapCheckType: boolean; // default false, should automapping check types ?
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
   jsonPathOptions?: JSONPath.JSONPathOptions | null;

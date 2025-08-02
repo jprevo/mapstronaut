@@ -31,7 +31,8 @@ export class AsyncMapper<
   }
 
   async map(source: TSource, target?: TTarget): Promise<TTarget> {
-    const result = target ?? ({} as TTarget);
+    let result = target ?? ({} as TTarget);
+    result = this.applyAutomap(source, result);
 
     for (const rule of this.asyncStructure) {
       await this.processRule(rule, source, result);

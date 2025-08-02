@@ -122,17 +122,7 @@ const mapper = new AsyncMapper<SourceClass, TargetClass>(structure, options);
 const mappedObject = await mapper.map(source);
 ```
 
-Options :
-
-```ts
-type MapperOptions = {
-  assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
-  automap: boolean; // default true, use automapping ?
-  automapChecktype: boolean; // default true, use checkType in automapping 
-  skipNull: boolean; // default false, should null values in source not be mapped ?
-  skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
-};
-```
+Options : see MapperOptions in src/types/mapper.ts 
 
 For practical reasons, there should also be a quick access function that directly returns the mapped object.
 
@@ -165,3 +155,7 @@ console.log(obj.first.a): // demo
 Define the mapping rules.
 
 See : src/types/mapper.ts
+
+## Documentation
+
+All examples should revolve around space themes.

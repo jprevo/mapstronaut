@@ -7,6 +7,7 @@ import type {
   RuleArray,
   RuleObject,
 } from "./types/mapper.js";
+import { Automapper } from "./automapper.js";
 
 export abstract class BaseMapper<
   TSource = UnknownSource,
@@ -26,6 +27,7 @@ export abstract class BaseMapper<
     return {
       assumeRoot: options?.assumeRoot ?? true,
       automap: options?.automap ?? true,
+      automapCheckType: options?.automapCheckType ?? true,
       skipNull: options?.skipNull ?? false,
       skipUndefined: options?.skipUndefined ?? true,
       jsonPathOptions: options?.jsonPathOptions ?? null,
@@ -94,6 +96,18 @@ export abstract class BaseMapper<
     }
 
     return path;
+  }
+
+  protected applyAutomap(source: UnknownTarget, result: UnknownTarget) {
+    if (this.options.automap) {
+      const automapper = new Automapper({
+        checkType: this.options.automapCheckType,
+      });
+
+      result = automapper.map(source, result);
+    }
+
+    return result;
   }
 
   protected extractData(source: TSource, jsonPath: string): any {

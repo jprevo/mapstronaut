@@ -16,7 +16,8 @@ export class Mapper<
   }
 
   map(source: TSource, target?: TTarget): TTarget {
-    const result = target ?? ({} as TTarget);
+    let result = target ?? ({} as TTarget);
+    result = this.applyAutomap(source, result);
 
     for (const rule of this.structure) {
       this.processRule(rule, source, result);

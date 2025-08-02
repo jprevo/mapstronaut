@@ -25,8 +25,8 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       return {} as TTarget;
     }
 
-    // Start with a copy of the target to preserve all target properties
-    const result = { ...target } as TTarget;
+    // Start with the target itself to preserve reference
+    const result = target;
 
     const sourceKeys = Object.keys(source);
     const targetKeys = Object.keys(target);
