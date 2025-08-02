@@ -5,10 +5,13 @@
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "type": "module",
   "scripts": {
+    "format": "prettier --write src/",
     "build": "tsc",
+    "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "test"
+    "test": "mocha 'src/test/**/*.ts'"
   },
   "files": [
     "dist"
@@ -32,7 +35,9 @@
   "devDependencies": {
     "@types/jsonpath-plus": "^5.0.5",
     "@types/mocha": "^10.0.10",
+    "@types/node": "^24.1.0",
     "mocha": "^11.7.1",
+    "prettier": "3.6.2",
     "typescript": "^5.9.2"
   },
   "dependencies": {

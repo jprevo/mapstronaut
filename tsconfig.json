@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "ES2020",
-    "types": [],
+    "types": ["mocha", "node"],
 
     // Other Outputs
     "sourceMap": true,
@@ -26,11 +26,6 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
-    "exclude": [
-      "node_modules",
-      "dist",
-      "**/*.test.ts"
-    ]
+    "skipLibCheck": true
   }
 }
