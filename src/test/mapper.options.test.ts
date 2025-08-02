@@ -165,9 +165,12 @@ describe("Mapper - Options", () => {
           mapper.map(source);
           // If no error is thrown, try the next path
         } catch (error) {
-          // If we get an error that contains "Failed to extract data using JSONPath", 
+          // If we get an error that contains "Failed to extract data using JSONPath",
           // then we've successfully covered the error handling
-          if (error instanceof Error && error.message.includes("Failed to extract data using JSONPath")) {
+          if (
+            error instanceof Error &&
+            error.message.includes("Failed to extract data using JSONPath")
+          ) {
             return; // Success - we covered the error path
           }
         }
@@ -175,7 +178,10 @@ describe("Mapper - Options", () => {
 
       // If none of the paths caused an error, skip this test for now
       // This is a "best effort" attempt to cover the error path
-      assert.ok(true, "JSONPath is very tolerant - error path may not be easily testable");
+      assert.ok(
+        true,
+        "JSONPath is very tolerant - error path may not be easily testable",
+      );
     });
   });
 });
