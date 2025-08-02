@@ -13,7 +13,7 @@ export class Outpath<T = UnknownTarget> {
       throw new Error("Invalid path: path cannot contain empty segments");
     }
 
-    let current: any = target;
+    let current: UnknownTarget = target;
 
     for (let i = 0; i < segments.length - 1; i++) {
       const segment = segments[i]!;
