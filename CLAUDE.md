@@ -67,7 +67,7 @@ When adding a new feature or updating an existing one, use the following workflo
 
 - automapping: it should be possible to map matching properties in the source object and target directly (see Automapper, Mapper should use Automapper internally)
 - sources should be defined using JsonPath strings ($. can be removed for convenience)
-- target properties should be specified using Outpath internal library
+- target properties should be specified using OutPath internal library
 - each rule can have a filter, which is a function (possibly async) that return a boolean indicating if the mapping for this rule should be done. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third
 - it should be possible to map to object and classes
 - it should be possible to map from any type (string, Array, object, number, etc)
@@ -127,6 +127,7 @@ Options :
 type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
+  automapChecktype: boolean; // default true, use checkType in automapping 
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
 };
@@ -138,15 +139,15 @@ For practical reasons, there should also be a quick access function that directl
 mapObject(structure, source, target?, options?);
 ```
 
-### Outpath
+### OutPath
 
-Outpath is an internal class that allows writing properties and subproperties in objects.
+OutPath is an internal class that allows writing properties and subproperties in objects.
 
 Examples :
 
 ```
 const obj: MyTarget = {};
-const outpath = new Outpath<MyTarget>();
+const outpath = new OutPath<MyTarget>();
 
 outpath.write(obj, "first.a", "demo");
 console.log(obj.first.a): // demo

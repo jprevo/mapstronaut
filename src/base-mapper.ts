@@ -1,5 +1,5 @@
 import { JSONPath } from "jsonpath-plus";
-import { Outpath } from "./outpath.js";
+import { OutPath } from "./outpath.js";
 import type { UnknownSource, UnknownTarget } from "./types/generic.js";
 import type {
   MapperOptions,
@@ -14,12 +14,12 @@ export abstract class BaseMapper<
 > {
   protected structure: Rule[];
   protected options: MapperOptions;
-  protected outpath: Outpath<TTarget>;
+  protected outpath: OutPath<TTarget>;
 
   protected constructor(structure: Rule[], options?: Partial<MapperOptions>) {
     this.structure = structure;
     this.options = this.mergeWithDefaults(options);
-    this.outpath = new Outpath<TTarget>();
+    this.outpath = new OutPath<TTarget>();
   }
 
   protected mergeWithDefaults(options?: Partial<MapperOptions>): MapperOptions {

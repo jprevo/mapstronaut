@@ -1,5 +1,5 @@
 export { Automapper } from "./automapper.js";
-export { Outpath } from "./outpath.js";
+export { OutPath } from "./outpath.js";
 export { Mapper, mapObject } from "./mapper.js";
 export { AsyncMapper, mapObjectAsync } from "./async-mapper.js";
 export { BaseMapper } from "./base-mapper.js";
@@ -11,7 +11,6 @@ export type {
   Rule,
   AsyncRule,
   RuleArray,
-  AsyncRuleArray,
   RuleObject,
   AsyncRuleObject,
 } from "./types/mapper.js";

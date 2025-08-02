@@ -1,12 +1,12 @@
 import { describe, it } from "mocha";
 import { strict as assert } from "assert";
-import { Outpath } from "../outpath.js";
+import { OutPath } from "../outpath.js";
 
 describe("Outpath", () => {
   describe("write", () => {
     it("should write a simple property", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "name", "John");
 
@@ -15,7 +15,7 @@ describe("Outpath", () => {
 
     it("should write a nested property", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.name", "Jane");
 
@@ -24,7 +24,7 @@ describe("Outpath", () => {
 
     it("should write deeply nested properties", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.profile.details.age", 25);
 
@@ -33,7 +33,7 @@ describe("Outpath", () => {
 
     it("should preserve existing properties when writing nested", () => {
       const obj: any = { user: { name: "John" } };
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.age", 30);
 
@@ -43,7 +43,7 @@ describe("Outpath", () => {
 
     it("should overwrite existing properties", () => {
       const obj: any = { name: "John" };
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "name", "Jane");
 
@@ -52,7 +52,7 @@ describe("Outpath", () => {
 
     it("should handle null values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "value", null);
 
@@ -61,7 +61,7 @@ describe("Outpath", () => {
 
     it("should handle undefined values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "value", undefined);
 
@@ -70,7 +70,7 @@ describe("Outpath", () => {
 
     it("should handle boolean values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "flag", true);
 
@@ -79,7 +79,7 @@ describe("Outpath", () => {
 
     it("should handle number values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "count", 42);
 
@@ -88,7 +88,7 @@ describe("Outpath", () => {
 
     it("should handle array values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
       const array = [1, 2, 3];
 
       outpath.write(obj, "items", array);
@@ -98,7 +98,7 @@ describe("Outpath", () => {
 
     it("should handle object values", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
       const nestedObj = { a: 1, b: "test" };
 
       outpath.write(obj, "data", nestedObj);
@@ -117,7 +117,7 @@ describe("Outpath", () => {
       }
 
       const obj: TestTarget = {};
-      const outpath = new Outpath<TestTarget>();
+      const outpath = new OutPath<TestTarget>();
 
       outpath.write(obj, "first.a", "demo");
       outpath.write(obj, "first.b.test", false);
@@ -128,7 +128,7 @@ describe("Outpath", () => {
 
     it("should handle multiple writes to the same object", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.name", "John");
       outpath.write(obj, "user.age", 25);
@@ -143,7 +143,7 @@ describe("Outpath", () => {
 
     it("should replace null intermediate objects", () => {
       const obj: any = { user: null };
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.name", "John");
 
@@ -152,7 +152,7 @@ describe("Outpath", () => {
 
     it("should replace undefined intermediate objects", () => {
       const obj: any = { user: undefined };
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.name", "John");
 
@@ -161,7 +161,7 @@ describe("Outpath", () => {
 
     it("should throw error on empty string paths", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       assert.throws(() => {
         outpath.write(obj, "", "value");
@@ -170,7 +170,7 @@ describe("Outpath", () => {
 
     it("should handle single character property names", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "a.b.c", "value");
 
@@ -186,7 +186,7 @@ describe("Outpath", () => {
       }
 
       const instance = new TestClass();
-      const outpath = new Outpath<TestClass>();
+      const outpath = new OutPath<TestClass>();
 
       outpath.write(instance, "name", "Test");
       outpath.write(instance, "nested.value", 123);
@@ -197,7 +197,7 @@ describe("Outpath", () => {
 
     it("should throw error on consecutive dots in path (empty segments)", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       assert.throws(() => {
         outpath.write(obj, "user..name", "John");
@@ -206,7 +206,7 @@ describe("Outpath", () => {
 
     it("should throw error on leading dot in path", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       assert.throws(() => {
         outpath.write(obj, ".user.name", "John");
@@ -215,7 +215,7 @@ describe("Outpath", () => {
 
     it("should throw error on trailing dot in path", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       assert.throws(() => {
         outpath.write(obj, "user.name.", "John");
@@ -224,7 +224,7 @@ describe("Outpath", () => {
 
     it("should handle escaped dots in property names", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user\\.name", "John");
 
@@ -233,7 +233,7 @@ describe("Outpath", () => {
 
     it("should handle escaped dots in nested properties", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "config.server\\.host", "localhost");
 
@@ -242,7 +242,7 @@ describe("Outpath", () => {
 
     it("should handle multiple escaped dots in single property", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "file\\.name\\.extension", "test");
 
@@ -251,7 +251,7 @@ describe("Outpath", () => {
 
     it("should handle escaped dots mixed with regular dots", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "user.profile\\.data.name", "Jane");
 
@@ -260,7 +260,7 @@ describe("Outpath", () => {
 
     it("should handle escaped dots at the beginning of property names", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "\\.hidden", "secret");
 
@@ -269,7 +269,7 @@ describe("Outpath", () => {
 
     it("should handle escaped dots at the end of property names", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "config\\.", "value");
 
@@ -278,7 +278,7 @@ describe("Outpath", () => {
 
     it("should handle backslashes that don't escape dots", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "path\\to\\file", "content");
 
@@ -287,7 +287,7 @@ describe("Outpath", () => {
 
     it("should handle complex nested paths with escaped dots", () => {
       const obj: any = {};
-      const outpath = new Outpath();
+      const outpath = new OutPath();
 
       outpath.write(obj, "app.config\\.env.database\\.host", "db.example.com");
 
@@ -303,7 +303,7 @@ describe("Outpath", () => {
       }
 
       const obj: TestTarget = {};
-      const outpath = new Outpath<TestTarget>();
+      const outpath = new OutPath<TestTarget>();
 
       outpath.write(obj, "server\\.config", "production");
       outpath.write(obj, "nested.api\\.key", "secret123");
