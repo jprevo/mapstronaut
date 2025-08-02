@@ -1,8 +1,11 @@
+import JSONPath from "jsonpath-plus";
+
 export type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
+  jsonPathOptions?: JSONPath.JSONPathOptions | null;
 };
 
 export type Rule = RuleArray | RuleObject;

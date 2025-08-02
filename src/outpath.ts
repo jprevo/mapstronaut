@@ -1,12 +1,14 @@
 import type { UnknownTarget } from "./types/generic.js";
 
 export class OutPath<T = UnknownTarget> {
+  private static segmentCache: Map<string, string[]> = new Map();
+
   write(target: T, path: string, value: any): void {
     if (!path) {
       throw new Error("Path cannot be empty");
     }
 
-    const segments = this.parseSegments(path);
+    const segments = this.getCachedSegments(path);
 
     // Check for empty segments (consecutive dots or leading/trailing dots)
     if (segments.some((segment) => segment === "")) {
@@ -29,6 +31,15 @@ export class OutPath<T = UnknownTarget> {
     if (finalSegment) {
       current[finalSegment] = value;
     }
+  }
+
+  private getCachedSegments(path: string): string[] {
+    let segments = OutPath.segmentCache.get(path);
+    if (!segments) {
+      segments = this.parseSegments(path);
+      OutPath.segmentCache.set(path, segments);
+    }
+    return segments;
   }
 
   private parseSegments(path: string): string[] {

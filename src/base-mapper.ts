@@ -28,6 +28,7 @@ export abstract class BaseMapper<
       automap: options?.automap ?? true,
       skipNull: options?.skipNull ?? false,
       skipUndefined: options?.skipUndefined ?? true,
+      jsonPathOptions: options?.jsonPathOptions ?? null,
     };
   }
 
@@ -98,6 +99,7 @@ export abstract class BaseMapper<
   protected extractData(source: TSource, jsonPath: string): any {
     try {
       const result = JSONPath({
+        ...(this.options.jsonPathOptions ?? {}),
         path: jsonPath,
         json: source as any,
         wrap: false,

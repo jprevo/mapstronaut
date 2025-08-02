@@ -11,8 +11,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "mocha 'src/test/**/*.ts'",
-    "coverage": "c8 mocha"
+    "test": "mocha 'src/test/**/*.test.ts'",
+    "coverage": "c8 mocha",
+    "prebenchmark": "npm run build",
+    "benchmark": "node dist/benchmark.js"
   },
   "files": [
     "dist"
@@ -40,6 +42,7 @@
     "c8": "^10.1.3",
     "mocha": "^11.7.1",
     "prettier": "3.6.2",
+    "tinybench": "^4.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   },
