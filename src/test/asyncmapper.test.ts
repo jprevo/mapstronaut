@@ -585,5 +585,184 @@ describe("AsyncMapper", () => {
         /FailOn error/,
       );
     });
+
+    it("should throw error when rule has neither source nor constant", async () => {
+      const source = { name: "John" };
+      const structure: AsyncStructure = [
+        {
+          target: "result",
+        } as any, // Force this invalid rule
+      ];
+
+      const mapper = new AsyncMapper(structure);
+
+      await assert.rejects(
+        async () => await mapper.map(source),
+        /Rule must have either 'source' or 'constant' defined/,
+      );
+    });
+  });
+
+  describe("Transform with Constants", () => {
+    it("should apply async transform to constant values", async () => {
+      const source = { age: 25 };
+      const structure: AsyncStructure = [
+        {
+          constant: "USER_ROLE",
+          target: "role",
+          transform: async (data: string) => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return data.toLowerCase();
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        role: "user_role",
+      });
+    });
+
+    it("should apply sync transform to constant values", async () => {
+      const source = { age: 25 };
+      const structure: AsyncStructure = [
+        {
+          constant: "ADMIN_ROLE",
+          target: "role",
+          transform: (data: string) => data.toLowerCase(),
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        role: "admin_role",
+      });
+    });
+  });
+
+  describe("FailOn with Constants", () => {
+    it("should throw error when async failOn returns false for constants", async () => {
+      const source = { age: 15 };
+      const structure: AsyncStructure = [
+        {
+          constant: "USER",
+          target: "userType",
+          failOn: async (data, source) => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return source.age >= 18; // Fail if under 18
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+
+      await assert.rejects(
+        async () => await mapper.map(source),
+        /Mapping failed: condition failed for rule with target 'userType'/,
+      );
+    });
+
+    it("should complete mapping when async failOn returns true for constants", async () => {
+      const source = { age: 25 };
+      const structure: AsyncStructure = [
+        {
+          constant: "USER",
+          target: "userType",
+          failOn: async (data, source) => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return source.age >= 18; // Pass if 18 or older
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        userType: "USER",
+      });
+    });
+  });
+
+  describe("Default Values", () => {
+    it("should use default value when source data is null", async () => {
+      const source = { name: null };
+      const structure: AsyncStructure = [
+        {
+          source: "name",
+          target: "userName",
+          defaultValue: "Anonymous",
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        userName: "Anonymous",
+      });
+    });
+
+    it("should use default value when source data is undefined", async () => {
+      const source = { name: undefined };
+      const structure: AsyncStructure = [
+        {
+          source: "name",
+          target: "userName",
+          defaultValue: "Unknown",
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure);
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        userName: "Unknown",
+      });
+    });
+  });
+
+  describe("Skip Options with Transform", () => {
+    it("should skip undefined values after async transform", async () => {
+      const source = { value: "test" };
+      const structure: AsyncStructure = [
+        {
+          source: "value",
+          target: "result",
+          transform: async () => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return undefined;
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, { skipUndefined: true });
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {}); // Should be empty because undefined is skipped
+    });
+
+    it("should skip null values after async transform", async () => {
+      const source = { value: "test" };
+      const structure: AsyncStructure = [
+        {
+          source: "value",
+          target: "result",
+          transform: async () => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return null;
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, { skipNull: true });
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {}); // Should be empty because null is skipped
+    });
   });
 });

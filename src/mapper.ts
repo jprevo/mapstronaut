@@ -7,7 +7,10 @@ import type {
   RuleObject,
 } from "./types/mapper.js";
 
-export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> extends BaseMapper<TSource, TTarget> {
+export class Mapper<
+  TSource = UnknownSource,
+  TTarget = UnknownTarget,
+> extends BaseMapper<TSource, TTarget> {
   constructor(structure: Structure, options?: Partial<MapperOptions>) {
     super(structure, options);
   }
