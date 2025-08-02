@@ -143,6 +143,8 @@ mapObject(structure, source, target?, options?);
 
 OutPath is an internal class that allows writing properties and subproperties in objects.
 
+See: src/outpath.ts
+
 Examples :
 
 ```
@@ -161,20 +163,4 @@ console.log(obj.first.a): // demo
 
 Define the mapping rules.
 
-```ts
-type Structure = Rule[];
-
-type Rule = RuleArray | RuleObject;
-
-type RuleArray = [string, string]; // source (jsonpath), target (outpath)
-
-type RuleObject = {
-  source?: string; // jsonpath
-  target: string; // outpath
-  transform?: (data, source, target) => any;
-  constant?: any;
-  filter?: (data, source, target) => boolean;
-  defaultValue?: any;
-  failOn?: (data, source, target) => boolean;
-};
-```
+See : src/types/mapper.ts
