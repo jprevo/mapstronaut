@@ -1,0 +1,41 @@
+{
+  "name": "mapstronaut",
+  "version": "1.0.0",
+  "description": "A full-featured javascript object mapper for node and browsers",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "test"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/jprevo/mapstronaut.git"
+  },
+  "keywords": [
+    "object-mapper",
+    "mapping",
+    "automapping",
+    "object"
+  ],
+  "author": "Jonathan Prevost",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jprevo/mapstronaut/issues"
+  },
+  "homepage": "https://github.com/jprevo/mapstronaut#readme",
+  "devDependencies": {
+    "@types/jsonpath-plus": "^5.0.5",
+    "@types/mocha": "^10.0.10",
+    "mocha": "^11.7.1",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "jsonpath-plus": "^10.3.0"
+  }
+}
