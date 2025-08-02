@@ -1,6 +1,6 @@
 # Mapstronaut Examples
 
-This document provides comprehensive examples of the Mapstronaut library's capabilities. All examples use space-themed data to demonstrate the various mapping features.
+This document provides comprehensive examples of the Mapstronaut library's capabilities.
 
 ## Table of Contents
 
