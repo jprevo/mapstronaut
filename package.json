@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "format": "prettier --write src/",
+    "format": "prettier --write src/ docs/",
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",

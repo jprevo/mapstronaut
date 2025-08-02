@@ -9,7 +9,7 @@ Automapper is designed to handle the common scenario where you want to update an
 ## Basic Usage
 
 ```typescript
-import { Automapper } from 'mapstronaut';
+import { Automapper } from "mapstronaut";
 
 const automapper = new Automapper();
 
@@ -39,7 +39,7 @@ When `checkType` is enabled (default), the Automapper will only map properties i
 // With type checking (default)
 const automapper = new Automapper({ checkType: true });
 const source = { name: "John", age: "30" }; // age as string
-const target = { name: "Jane", age: 25 };   // age as number
+const target = { name: "Jane", age: 25 }; // age as number
 
 const result = automapper.map(source, target);
 // Result: { name: "John", age: 25 }
@@ -72,6 +72,7 @@ const result = automapper.map(source, target);
 ### Handling Special Values
 
 #### Undefined Values
+
 Undefined values in the source are never mapped, preserving the target's original value:
 
 ```typescript
@@ -84,6 +85,7 @@ const result = automapper.map(source, target);
 ```
 
 #### Null Values
+
 Null values are mapped normally:
 
 ```typescript
@@ -115,12 +117,12 @@ When both source and target properties are objects (not arrays), the Automapper 
 ```typescript
 const source = {
   user: { name: "John", details: { age: 30 } },
-  settings: { theme: "dark" }
+  settings: { theme: "dark" },
 };
 
 const target = {
   user: { name: "Jane", city: "Paris" },
-  settings: { theme: "light", language: "en" }
+  settings: { theme: "light", language: "en" },
 };
 
 const result = automapper.map(source, target);
@@ -146,11 +148,17 @@ The Automapper works with class instances, mapping only properties that exist in
 
 ```typescript
 class SourceClass {
-  constructor(public name: string, public age: number) {}
+  constructor(
+    public name: string,
+    public age: number,
+  ) {}
 }
 
 class TargetClass {
-  constructor(public name: string = "", public city: string = "Unknown") {}
+  constructor(
+    public name: string = "",
+    public city: string = "Unknown",
+  ) {}
 }
 
 const automapper = new Automapper<SourceClass, TargetClass>();
@@ -179,6 +187,7 @@ Creates a new Automapper instance with optional configuration.
 Maps matching properties from source to target.
 
 **Parameters:**
+
 - `source`: The source object to map from
 - `target`: (Optional) The target object to map to
 
