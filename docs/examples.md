@@ -639,14 +639,14 @@ const structure = [
   {
     source: "age",
     target: "astronautAge",
-    failOn: (transformedAge: string, source: any) => source.age >= 18, // Pass if original age >= 18
+    failOn: (transformedAge: string, source: any) => source.age < 18, // Fail if original age < 18
     transform: (age: number) => `${age} years old`,
   },
   {
     source: "flightHours",
     target: "pilotExperience",
     failOn: (transformedHours: string, source: any) =>
-      source.flightHours >= 1000, // Pass if original hours >= 1000
+      source.flightHours < 1000, // Fail if original hours < 1000
     transform: (hours: number) => `${hours} flight hours`,
   },
 ];
@@ -677,15 +677,15 @@ const structure = [
     source: "budget",
     target: "approvedBudget",
     failOn: (budget: number, source: any) => {
-      // Pass if budget is under $100B AND mission duration is under 2 years
-      return budget <= 100000000000 && source.duration <= 730;
+      // Fail if budget is over $100B OR mission duration is over 2 years
+      return budget > 100000000000 || source.duration > 730;
     },
     transform: (budget: number) => `$${(budget / 1000000000).toFixed(1)}B`,
   },
   {
     source: "crewSize",
     target: "crew",
-    failOn: (size: number) => size >= 3 && size <= 8, // Pass if crew size is optimal
+    failOn: (size: number) => size < 3 || size > 8, // Fail if crew size is not optimal
     transform: (size: number) => `${size} astronauts`,
   },
 ];
@@ -857,13 +857,13 @@ const structure = [
   {
     source: "budget",
     target: "approvedBudget",
-    failOn: async (budget: number) => await checkBudgetApproval(budget), // Pass if approved
+    failOn: async (budget: number) => !(await checkBudgetApproval(budget)), // Fail if not approved
     transform: (budget: number) => `$${(budget / 1000000000).toFixed(1)}B`,
   },
   {
     source: "technology",
     target: "propulsionSystem",
-    failOn: async (tech: string) => await validateTechnology(tech), // Pass if validated
+    failOn: async (tech: string) => !(await validateTechnology(tech)), // Fail if not validated
   },
 ];
 

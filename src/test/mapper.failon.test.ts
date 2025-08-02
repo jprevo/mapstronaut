@@ -5,13 +5,13 @@ import type { Structure } from "../types/mapper.js";
 
 describe("Mapper failOn functionality", () => {
   describe("failOn with source rules", () => {
-    it("should throw error when failOn returns false", () => {
+    it("should throw error when failOn returns true", () => {
       const source = { name: "John", age: 17 };
       const structure: Structure = [
         {
           source: "age",
           target: "userAge",
-          failOn: (data) => data >= 18, // Fail if under 18
+          failOn: (data) => data < 18, // Fail if under 18
         },
       ];
 
@@ -23,13 +23,13 @@ describe("Mapper failOn functionality", () => {
       );
     });
 
-    it("should complete mapping when failOn returns true", () => {
+    it("should complete mapping when failOn returns false", () => {
       const source = { name: "John", age: 25 };
       const structure: Structure = [
         {
           source: "age",
           target: "userAge",
-          failOn: (data) => data >= 18, // Pass if 18 or older
+          failOn: (data) => data < 18, // Pass if 18 or older
         },
       ];
 
@@ -54,7 +54,7 @@ describe("Mapper failOn functionality", () => {
             receivedData = data;
             receivedSource = src;
             receivedTarget = tgt;
-            return true; // Always pass
+            return false; // Always pass
           },
         },
       ];
@@ -74,7 +74,7 @@ describe("Mapper failOn functionality", () => {
           source: "score",
           target: "numericScore",
           transform: (data) => parseInt(data), // Convert string to number
-          failOn: (data) => data >= 90, // Fail if less than 90 after transform
+          failOn: (data) => data < 90, // Fail if less than 90 after transform
         },
       ];
 
@@ -93,7 +93,7 @@ describe("Mapper failOn functionality", () => {
           source: "age",
           target: "userAge",
           defaultValue: 16,
-          failOn: (data) => data >= 18, // Fail if under 18
+          failOn: (data) => data < 18, // Fail if under 18
         },
       ];
 
@@ -118,7 +118,7 @@ describe("Mapper failOn functionality", () => {
         {
           source: "user.profile.score",
           target: "finalScore",
-          failOn: (data) => data >= 50, // Fail if less than 50
+          failOn: (data) => data < 50, // Fail if less than 50
         },
       ];
 
@@ -138,7 +138,7 @@ describe("Mapper failOn functionality", () => {
         {
           constant: "guest",
           target: "role",
-          failOn: (data) => data === "admin", // Fail if not admin
+          failOn: (data) => data !== "admin", // Fail if not admin
         },
       ];
 
@@ -156,7 +156,7 @@ describe("Mapper failOn functionality", () => {
         {
           constant: "admin",
           target: "role",
-          failOn: (data) => data === "admin", // Pass if admin
+          failOn: (data) => data !== "admin", // Pass if admin
         },
       ];
 
@@ -173,7 +173,7 @@ describe("Mapper failOn functionality", () => {
           constant: "user",
           target: "role",
           transform: (data) => data.toUpperCase(), // Transform to uppercase
-          failOn: (data) => data === "ADMIN", // Fail if not ADMIN after transform
+          failOn: (data) => data !== "ADMIN", // Fail if not ADMIN after transform
         },
       ];
 
@@ -198,7 +198,7 @@ describe("Mapper failOn functionality", () => {
           filter: (data) => data >= 18, // Filter out under 18
           failOn: (data) => {
             failOnCalled = true;
-            return data >= 21; // This should not be called
+            return data < 21; // This should not be called
           },
         },
       ];
@@ -216,7 +216,7 @@ describe("Mapper failOn functionality", () => {
         {
           source: "age",
           target: "userAge",
-          failOn: (data) => data >= 18, // This will fail
+          failOn: (data) => data < 18, // This will fail
         },
         {
           source: "score",
@@ -240,7 +240,7 @@ describe("Mapper failOn functionality", () => {
         {
           source: "age",
           target: "userAge",
-          failOn: (data) => data >= 18, // Fail if under 18
+          failOn: (data) => data < 18, // Fail if under 18
         },
       ];
 
@@ -258,7 +258,7 @@ describe("Mapper failOn functionality", () => {
         {
           source: "value",
           target: "deeply.nested.field",
-          failOn: () => false,
+          failOn: () => true,
         },
       ];
 

@@ -44,7 +44,7 @@ export class Mapper<
       }
 
       // Apply failOn check for constant values
-      if (ruleObj.failOn && !ruleObj.failOn(finalValue, source, target)) {
+      if (ruleObj.failOn && ruleObj.failOn(finalValue, source, target)) {
         throw new Error(
           `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
         );
@@ -81,8 +81,8 @@ export class Mapper<
       valueToMap = ruleObj.transform(valueToMap, source, target);
     }
 
-    // Apply failOn check - if it returns false, throw error and stop mapping
-    if (ruleObj.failOn && !ruleObj.failOn(valueToMap, source, target)) {
+    // Apply failOn check - if it returns true, throw error and stop mapping
+    if (ruleObj.failOn && ruleObj.failOn(valueToMap, source, target)) {
       throw new Error(
         `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
       );

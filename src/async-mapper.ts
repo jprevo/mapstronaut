@@ -72,7 +72,7 @@ export class AsyncMapper<
       // Apply failOn check for constant values
       if (
         ruleObj.failOn &&
-        !(await Promise.resolve(ruleObj.failOn(finalValue, source, target)))
+        (await Promise.resolve(ruleObj.failOn(finalValue, source, target)))
       ) {
         throw new Error(
           `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
@@ -110,8 +110,8 @@ export class AsyncMapper<
       valueToMap = await ruleObj.transform(valueToMap, source, target);
     }
 
-    // Apply failOn check - if it returns false, throw error and stop mapping
-    if (ruleObj.failOn && !(await ruleObj.failOn(valueToMap, source, target))) {
+    // Apply failOn check - if it returns true, throw error and stop mapping
+    if (ruleObj.failOn && (await ruleObj.failOn(valueToMap, source, target))) {
       throw new Error(
         `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
       );

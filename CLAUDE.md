@@ -76,7 +76,7 @@ When adding a new feature or updating an existing one, use the following workflo
 - an optional `transform` function (possibly async) can be given for each rule, for "manual" mapping. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third.
 - an optional `defaultValue` can be given for each rule, to use when the data is null or undefined
 - an optional `constant` can be given for each rule. When constant is defined, the `source` is not required, otherwise it is.
-- an optional `failOn` function (possibly async) can be given for each rule, if it returns false a descriptive error will be thrown and the mapping stopped
+- an optional `failOn` function (possibly async) can be given for each rule, if it returns true a descriptive error will be thrown and the mapping stopped
 
 ## API
 
@@ -157,5 +157,7 @@ Define the mapping rules.
 See : src/types/mapper.ts
 
 ## Documentation
+
+Examples are stored in ./docs/examples.md.
 
 All examples should revolve around space themes.

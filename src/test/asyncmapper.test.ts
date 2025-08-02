@@ -218,7 +218,7 @@ describe("AsyncMapper", () => {
   });
 
   describe("Async FailOn Operations", () => {
-    it("should throw error when async failOn returns false", async () => {
+    it("should throw error when async failOn returns true", async () => {
       const source = { name: "John", age: 17 };
       const structure: AsyncStructure = [
         {
@@ -226,7 +226,7 @@ describe("AsyncMapper", () => {
           target: "userAge",
           failOn: async (data) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return data >= 18; // Fail if under 18
+            return data < 18; // Fail if under 18
           },
         },
       ];
@@ -239,7 +239,7 @@ describe("AsyncMapper", () => {
       );
     });
 
-    it("should complete mapping when async failOn returns true", async () => {
+    it("should complete mapping when async failOn returns false", async () => {
       const source = { name: "John", age: 25 };
       const structure: AsyncStructure = [
         {
@@ -247,7 +247,7 @@ describe("AsyncMapper", () => {
           target: "userAge",
           failOn: async (data) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return data >= 18; // Pass if 18 or older
+            return data < 18; // Pass if 18 or older
           },
         },
       ];
@@ -270,7 +270,7 @@ describe("AsyncMapper", () => {
           },
           failOn: async (data: string) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return data === "adult"; // Pass only if result is "adult"
+            return data !== "adult"; // Pass only if result is "adult"
           },
         },
       ];
@@ -287,7 +287,7 @@ describe("AsyncMapper", () => {
         {
           source: "age",
           target: "userAge",
-          failOn: (data) => data >= 18, // Pass if 18 or older
+          failOn: (data) => data < 18, // Pass if 18 or older
         },
       ];
 
@@ -324,7 +324,7 @@ describe("AsyncMapper", () => {
           },
           failOn: async (data) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return data.grade === "A" || data.grade === "B"; // Pass if grade is A or B
+            return data.grade !== "A" && data.grade !== "B"; // Pass if grade is A or B
           },
         },
         {
@@ -383,7 +383,7 @@ describe("AsyncMapper", () => {
           failOn: async (data, source, target) => {
             await new Promise((resolve) => setTimeout(resolve, 5));
             failOnCalls.push({ data, source, target });
-            return data.includes("Hello");
+            return !data.includes("Hello");
           },
         },
       ];
@@ -645,7 +645,7 @@ describe("AsyncMapper", () => {
   });
 
   describe("FailOn with Constants", () => {
-    it("should throw error when async failOn returns false for constants", async () => {
+    it("should throw error when async failOn returns true for constants", async () => {
       const source = { age: 15 };
       const structure: AsyncStructure = [
         {
@@ -653,7 +653,7 @@ describe("AsyncMapper", () => {
           target: "userType",
           failOn: async (data, source) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return source.age >= 18; // Fail if under 18
+            return source.age < 18; // Fail if under 18
           },
         },
       ];
@@ -666,7 +666,7 @@ describe("AsyncMapper", () => {
       );
     });
 
-    it("should complete mapping when async failOn returns true for constants", async () => {
+    it("should complete mapping when async failOn returns false for constants", async () => {
       const source = { age: 25 };
       const structure: AsyncStructure = [
         {
@@ -674,7 +674,7 @@ describe("AsyncMapper", () => {
           target: "userType",
           failOn: async (data, source) => {
             await new Promise((resolve) => setTimeout(resolve, 10));
-            return source.age >= 18; // Pass if 18 or older
+            return source.age < 18; // Pass if 18 or older
           },
         },
       ];
