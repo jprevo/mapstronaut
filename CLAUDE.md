@@ -10,7 +10,7 @@ uses jsonpath-plus as its core dependency for object path traversal and mapping 
 ## Development Commands
 
 - **Build**: `npm run build` - Compiles TypeScript to JavaScript in the dist/ directory
-- **Test**: `npm run test` - Runs Mocha tests from src/test/**/*.ts
+- **Test**: `npm run test` - Runs Mocha tests from src/test/\*_/_.ts
 - **Format**: `npm run format` - Formats source code using Prettier, YOU MUST use this command after you finish all your
   developments to keep a clean code environment
 
@@ -53,6 +53,7 @@ When adding a new feature or updating an existing one, use the following workflo
 - Run code formatting to clean up
 
 ## Ubiquitous langage
+
 - mapstronaut : this whole library
 - source object : the full source object we will map
 - target : the target object
@@ -70,18 +71,19 @@ When adding a new feature or updating an existing one, use the following workflo
 - an optional `transform` function (possibly async) can be given for each rule, for "manual" mapping. This function has the data for this rule (which is the data matching the jsonpath for this source object) as the first parameter, the full source in second, and the target in its current state as third.
 - an optional `defaultValue` can be given for each rule, to use when the data is null or undefined
 - an optional `constant` can be given for each rule. When constant is defined, the `source` is not required, otherwise it is.
-- an optional `failsOn` function (possibly async) can be given for each rule, if it returns false a descriptive error will be thrown and the mapping stopped 
-- 
+- an optional `failsOn` function (possibly async) can be given for each rule, if it returns false a descriptive error will be thrown and the mapping stopped
+-
 
 ## API
 
 ### Automapper
 
-`Automapper` is a class that automatically maps fields that exists in both source and target. It takes the following options : 
+`Automapper` is a class that automatically maps fields that exists in both source and target. It takes the following options :
+
 ```ts
 type AutomapperConfiguration = {
-    checkType: boolean, // default true, check if source/target property type matches
-}
+  checkType: boolean; // default true, check if source/target property type matches
+};
 ```
 
 It should work with object and classes.
@@ -106,15 +108,15 @@ mapper.useCache = true;
 mapper.automap = false; // etc
 ```
 
-Options : 
+Options :
 
 ```ts
 type MapperOptions = {
-  useCache: boolean, // default true, use JSONPath.cache ?
-  assumeRoot: boolean, // default true, add $. to JSONPath entries if not present for easier structure configuration
-  automap: boolean, // default true, use automapping ?
-  skipNull: boolean, // default false, should null values in source not be mapped ?
-  skipUndefined: boolean, // default true, should undefined values in source not be mapper ?
+  useCache: boolean; // default true, use JSONPath.cache ?
+  assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
+  automap: boolean; // default true, use automapping ?
+  skipNull: boolean; // default false, should null values in source not be mapped ?
+  skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
 };
 ```
 
@@ -128,7 +130,8 @@ mapObject(structure, source, target?, options?);
 
 Outpath is an internal class that allows writing properties and subproperties in objects.
 
-Examples : 
+Examples :
+
 ```
 const obj: MyTarget = {};
 const outpath = new Outpath<MyTarget>();
@@ -141,25 +144,24 @@ console.log(obj.first.b.test); // false
 console.log(obj.first.a): // demo
 ```
 
-
 ### Structure
 
 Define the mapping rules.
 
 ```ts
-type Structure = Rule[]
+type Structure = Rule[];
 
-type Rule = RuleArray | RuleObject
+type Rule = RuleArray | RuleObject;
 
 type RuleArray = [string, string]; // source (jsonpath), target (outpath)
 
 type RuleObject = {
-  source?: string, // jsonpath
-  target: string, // outpath
-  transform?: (data, source, target) => any,
-  constant?: any,
-  filter?: (data, source, target) => boolean,
-  defaultValue?: any,
-  failOn?: (data, source, target) => boolean
-}
+  source?: string; // jsonpath
+  target: string; // outpath
+  transform?: (data, source, target) => any;
+  constant?: any;
+  filter?: (data, source, target) => boolean;
+  defaultValue?: any;
+  failOn?: (data, source, target) => boolean;
+};
 ```
