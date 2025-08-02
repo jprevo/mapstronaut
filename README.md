@@ -7,6 +7,8 @@ Mapstronaut is a full-featured JavaScript object mapper.
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
 
+## Installtion
+
 ```bash
 npm i mapstronaut
 ```
@@ -99,7 +101,7 @@ const structure = [
     source: "mission",
     target: "marsMission",
     filter: (mission) => mission.destination === "Mars",
-  }
+  },
 ];
 
 const result = mapObject(structure, astronaut);
