@@ -6,17 +6,28 @@ export type MapperOptions = {
 };
 
 export type Rule = RuleArray | RuleObject;
+export type AsyncRule = RuleArray | AsyncRuleObject;
 
 export type RuleArray = [string, string]; // source (jsonpath), target (outpath)
 
-export type RuleObject = {
+type BaseRuleObject = {
   source?: string; // jsonpath
   target: string; // outpath
-  transform?: (data: any, source: any, target: any) => any;
   constant?: any;
-  filter?: (data: any, source: any, target: any) => boolean;
   defaultValue?: any;
+};
+
+export type RuleObject = BaseRuleObject & {
+  transform?: (data: any, source: any, target: any) => any;
+  filter?: (data: any, source: any, target: any) => boolean;
   failOn?: (data: any, source: any, target: any) => boolean;
 };
 
+export type AsyncRuleObject = BaseRuleObject & {
+  transform?: (data: any, source: any, target: any) => any | Promise<any>;
+  filter?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
+  failOn?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
+};
+
 export type Structure = Rule[];
+export type AsyncStructure = AsyncRule[];

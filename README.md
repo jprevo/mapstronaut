@@ -2,7 +2,7 @@
 
 Mapstronaut is a full-featured JavaScript object mapper.
 
-![Tests 167/167](https://img.shields.io/badge/tests-167/167-green)
+![Tests 188/188](https://img.shields.io/badge/tests-188/188-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)

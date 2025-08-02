@@ -95,10 +95,13 @@ It should work with object and classes.
 
 `Mapper` is the main mapping class. It takes a structure, a source, an optional target (creates an empty object when not provided) and options.
 
+
+
 Examples:
 
 ```ts
 const mapper = new Mapper<SourceClass, TargetClass>(structure, options);
+// Mapper is the main non-async mapper class
 
 const mappedObject = mapper.map(source);
 const mappedObjectMerge = mapper.map(source, target);
@@ -108,6 +111,14 @@ const structure = mapper.getStructure(); // also setStructure
 
 // for each possible option, add getsetters
 mapper.automap = false; // etc
+```
+
+```ts
+const mapper = new AsyncMapper<SourceClass, TargetClass>(structure, options);
+// AsyncMapper is the async mapper class
+// to use with async filters, failOn, or transform
+
+const mappedObject = await mapper.map(source);
 ```
 
 Options :
