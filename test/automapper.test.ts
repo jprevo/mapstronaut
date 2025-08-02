@@ -1,5 +1,5 @@
 import * as assert from "assert";
-import { Automapper } from "../automapper.js";
+import { Automapper } from "../src/automapper.js";
 
 describe("Automapper", function () {
   describe("constructor", function () {

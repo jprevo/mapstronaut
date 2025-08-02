@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { strict as assert } from "assert";
-import { Mapper } from "../mapper.js";
-import type { Structure, MapperOptions } from "../types/mapper.js";
+import { Mapper } from "../src/mapper.js";
+import type { Structure, MapperOptions } from "../src/types/mapper.js";
 
 describe("Mapper - Options", () => {
   describe("constructor and options", () => {

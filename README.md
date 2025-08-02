@@ -129,6 +129,8 @@ const result = await mapObjectAsync(structure, astronaut);
 // { "destinationInfo": { "name": "Moon", "type": "Celestial Body" } }
 ```
 
+[See more examples here](./docs/examples.md).
+
 ## Documentation
 
 ## Contributions

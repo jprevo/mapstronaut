@@ -7,11 +7,11 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "format": "prettier --write src/ docs/ README.md",
+    "format": "prettier --write src/ test/ docs/ README.md",
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "mocha 'src/test/**/*.test.ts'",
+    "test": "mocha 'test/**/*.test.ts'",
     "coverage": "c8 mocha",
     "prebenchmark": "npm run build",
     "benchmark": "node dist/benchmark.js"

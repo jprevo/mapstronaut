@@ -1,6 +1,6 @@
 import { describe, it } from "mocha";
 import { strict as assert } from "assert";
-import { OutPath } from "../outpath.js";
+import { OutPath } from "../src/outpath.js";
 
 describe("Outpath", () => {
   describe("write", () => {

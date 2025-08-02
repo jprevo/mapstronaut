@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { strict as assert } from "assert";
-import { AsyncMapper, mapObjectAsync } from "../async-mapper.js";
-import type { AsyncStructure } from "../types/mapper.js";
+import { AsyncMapper, mapObjectAsync } from "../src/async-mapper.js";
+import type { AsyncStructure } from "../src/types/mapper.js";
 
 describe("AsyncMapper", () => {
   describe("Basic Async Operations", () => {

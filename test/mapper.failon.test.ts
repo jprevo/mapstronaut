@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import { strict as assert } from "assert";
-import { Mapper, mapObject } from "../mapper.js";
-import type { Structure } from "../types/mapper.js";
+import { Mapper, mapObject } from "../src/mapper.js";
+import type { Structure } from "../src/types/mapper.js";
 
 describe("Mapper failOn functionality", () => {
   describe("failOn with source rules", () => {
