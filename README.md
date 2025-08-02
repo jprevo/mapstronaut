@@ -11,6 +11,10 @@ Mapstronaut is a full-featured JavaScript object mapper.
 npm i mapstronaut
 ```
 
+## Main features
+
+- Works with node and browsers
+
 ## Usage
 
 ### Automapping

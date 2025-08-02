@@ -1,7 +1,7 @@
 {
   "name": "mapstronaut",
   "version": "1.0.0",
-  "description": "A full-featured javascript object mapper for node and browsers",
+  "description": "A full-featured JavaScript object mapper",
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
