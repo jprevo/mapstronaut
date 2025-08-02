@@ -104,6 +104,13 @@ export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> {
         finalValue = ruleObj.transform(ruleObj.constant, source, target);
       }
 
+      // Apply failOn check for constant values
+      if (ruleObj.failOn && !ruleObj.failOn(finalValue, source, target)) {
+        throw new Error(
+          `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
+        );
+      }
+
       this.outpath.write(target, ruleObj.target, finalValue);
       return;
     }
@@ -133,6 +140,13 @@ export class Mapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     // Apply transform function if present
     if (ruleObj.transform) {
       valueToMap = ruleObj.transform(valueToMap, source, target);
+    }
+
+    // Apply failOn check - if it returns false, throw error and stop mapping
+    if (ruleObj.failOn && !ruleObj.failOn(valueToMap, source, target)) {
+      throw new Error(
+        `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
+      );
     }
 
     // Apply skipNull and skipUndefined rules after transform processing
