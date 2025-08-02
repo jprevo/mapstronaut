@@ -59,6 +59,9 @@ When adding a new feature or updating an existing one, use the following workflo
 - source object : the full source object we will map
 - target : the target object
 - source : the jsonpath entry in the rule, accessing a source object property
+- mapper : the main Mapper class that maps from one object to another
+- outpath: an internal library that write object values with dot notation
+- automapper : or automapping, is writing recursively from one object to another when properties match
 
 ## Features
 
@@ -112,7 +115,6 @@ Options :
 
 ```ts
 type MapperOptions = {
-  useCache: boolean; // default true, use JSONPath.cache ?
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
   skipNull: boolean; // default false, should null values in source not be mapped ?

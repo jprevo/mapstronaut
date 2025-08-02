@@ -1,6 +1,9 @@
 # Coverage
 coverage
 
+# Temporary
+dist/
+
 # Logs
 logs
 *.log
