@@ -15,59 +15,118 @@ npm i mapstronaut
 
 - Works with node and browsers
 - Uses the amazing JsonPath-plus library for parsing
-- Can automap properties matching in both source and target (with type checking)
-- Allows advanced rules creation
-- Typescript ready
+- Advanced rules capabilities
+- Automaps properties matching in both source and target (with type checking)
+- Built in Typescript
 
 ## Usage
 
-### JsonPath+
+### Basic example
 
-### Automapping
+```javascript
+import { mapObject } from "mapstronaut";
 
-Automapping automatically maps properties that exist in both source and target objects, including mapping from plain objects to class instances:
-
-```typescript
-import { mapObject } from 'mapstronaut';
-
-// Target spacecraft class
-class Spacecraft {
-  constructor(
-    public missionName: string = "",
-    public captain: string = "Unknown",
-    public status: string = "Preparing"
-  ) {}
-}
-
-// Source data from a space mission API (plain object)
-const missionData = {
-  missionName: "Apollo 11",
-  launchDate: new Date("1969-07-16"),
-  crew: 3,
-  payload: "Lunar Module"
+const astronaut = {
+  id: 12345,
+  personalInfo: {
+    name: "Neil Armstrong",
+    birthYear: 1930,
+  },
+  mission: {
+    name: "Apollo 11",
+    destination: "Moon",
+    launchDate: "1969-07-16",
+  },
+  rank: "Commander",
+  spaceWalks: [
+    { duration: 150, date: "1969-07-21" },
+    { duration: 45, date: "1969-07-22" },
+  ],
 };
 
-const spacecraft = new Spacecraft("", "Neil Armstrong", "Ready");
+const structure = [
+  ["personalInfo.name", "astronautName"],
+  ["mission.name", "missionInfo.title"],
+  ["mission.destination", "missionInfo.target"],
+  {
+    source: "spaceWalks[*].duration",
+    target: "walkDurations",
+  },
+];
 
-// Only properties that exist in both source and target will be mapped
-// Empty structure [] relies on automapping only
-const result = mapObject([], missionData, spacecraft, { automap: true });
+const target = {
+  id: null,
+};
 
-console.log(result.missionName); // "Apollo 11" (mapped from source)
-console.log(result.captain);     // "Neil Armstrong" (preserved from target)
-console.log(result.status);      // "Ready" (preserved from target)
-// crew, launchDate, and payload properties are not mapped since they don't exist in target
+const result = mapObject(structure, astronaut, target);
+
+/*
+{
+  "id": 12345, // automapped
+  "astronautName": "Neil Armstrong", 
+  "missionInfo": {
+    "title": "Apollo 11",
+    "target": "Moon"
+  },
+  "walkDurations": [150, 45]
+}
+*/
 ```
 
-Automapping is enabled by default.
+Using the same `astronaut` object as above :
 
-### Advanced examples
+### Filter example
+
+```javascript
+const structure = [
+  {
+    source: "mission.name",
+    target: "moonMission",
+    filter: (data, source) => source.mission.destination === "Moon",
+  },
+];
+
+const result = mapObject(structure, astronaut);
+// { "moonMission": "Apollo 11" }
+```
+
+### Transform example
+
+```javascript
+const structure = [
+  {
+    source: "personalInfo.birthYear",
+    target: "currentAge",
+    transform: (birthYear) => new Date().getFullYear() - birthYear,
+  },
+];
+
+const result = mapObject(structure, astronaut);
+// { "currentAge": 95 }
+```
+
+### Async mapping example
+
+```javascript
+import { mapObjectAsync } from "mapstronaut";
+
+const structure = [
+  {
+    source: "mission.destination",
+    target: "destinationInfo",
+    transform: async (destination) => {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return { name: destination, type: "Celestial Body" };
+    },
+  },
+];
+
+const result = await mapObjectAsync(structure, astronaut);
+// { "destinationInfo": { "name": "Moon", "type": "Celestial Body" } }
+```
 
 ## Documentation
-
-## Typescript
-
-Mapstronaut is built in typescript and provides its own definitions.
 
 ## Contributions
 
