@@ -134,8 +134,6 @@ const result = mapObject(structure, astronaut);
 
 ### Asynchronous Mapping
 
-For I/O operations (like API calls), use `mapObjectAsync` and an `async` transform function. Mappings run in parallel for maximum efficiency.
-
 ```javascript
 import { mapObjectAsync } from "mapstronaut";
 
