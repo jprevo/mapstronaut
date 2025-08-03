@@ -119,9 +119,8 @@ const structure = [
     source: "mission.destination",
     target: "destinationInfo",
     transform: async (destination) => {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      return { name: destination, type: "Celestial Body" };
+      const type = await externalSpaceApi.fetchType(destination);
+      return { name: destination, type: type };
     },
   },
 ];
