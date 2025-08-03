@@ -39,8 +39,8 @@ const astronaut = {
   },
   rank: "Commander",
   spaceWalks: [
-    { duration: 150, date: "1969-07-21" },
-    { duration: 45, date: "1969-07-22" },
+    { duration: 151, date: "1969-07-21" },
+    { duration: 45, date: "1969-07-22" }, // this one is not true btw
   ],
 };
 ```
@@ -77,7 +77,7 @@ const result = mapObject(structure, astronaut, target);
     "title": "Apollo 11",
     "target": "Moon"
   },
-  "walkDurations": [150, 45]
+  "walkDurations": [151, 45]
 }
 */
 ```
