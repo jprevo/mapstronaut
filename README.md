@@ -134,6 +134,10 @@ const result = await mapObjectAsync(structure, astronaut);
 
 ## Documentation
 
+- [Basic Usage](./docs/basic-usage.md)
+- [Options reference](./docs/options.md)
+- [Additional examples](./docs/examples.md)
+
 ## Contributions
 
 ## Licence
