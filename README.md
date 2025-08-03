@@ -136,6 +136,7 @@ const result = await mapObjectAsync(structure, astronaut);
 - [Basic Usage](./docs/basic-usage.md)
 - [Options reference](./docs/options.md)
 - [Mapping rules (structure)](./docs/structure.md)
+- [JSONPath input examples](./docs/jsonpath.md)
 - [Additional examples](./docs/examples.md)
 
 ## Contributions
