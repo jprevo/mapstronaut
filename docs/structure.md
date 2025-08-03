@@ -1,4 +1,4 @@
-# Mapping Structure Documentation
+# Mapping Structure (Rules)
 
 This document explains all the options available when defining mapping structures (rules) in Mapstronaut.
 
