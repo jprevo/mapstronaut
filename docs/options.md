@@ -86,11 +86,10 @@ The `MapperOptions` interface provides several configuration options to customiz
 
 ### parallelRun (boolean)
 - **Default**: `false`
-- **Description**: Only available on AsyncMapper. When `true`, async operations (filters, transforms, failOn) are executed in parallel rather than sequentially.
+- **Description**: Only available on AsyncMapper. When `true`, all the mapping operations are done in parallel, which can increase mapping speed a lot, at the cost of a more *chaotic* process.
 - **Example**:
   ```ts
   const asyncMapper = new AsyncMapper(structure, { parallelRun: true });
-  // All async transforms and filters will run concurrently
   ```
 
 ## Usage Examples
