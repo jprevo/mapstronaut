@@ -34,8 +34,18 @@ export class AsyncMapper<
     let result = target ?? ({} as TTarget);
     result = this.applyAutomap(source, result);
 
-    for (const rule of this.asyncStructure) {
-      await this.processRule(rule, source, result);
+    if (this.options.parallelRun) {
+      // Process all rules in parallel
+      await Promise.all(
+        this.asyncStructure.map((rule) =>
+          this.processRule(rule, source, result),
+        ),
+      );
+    } else {
+      // Process rules sequentially
+      for (const rule of this.asyncStructure) {
+        await this.processRule(rule, source, result);
+      }
     }
 
     return result;

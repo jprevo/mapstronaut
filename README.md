@@ -2,7 +2,7 @@
 
 Mapstronaut is a full-featured JavaScript object mapper.
 
-![Tests 218/218](https://img.shields.io/badge/tests-218/218-green)
+![Tests 234/234](https://img.shields.io/badge/tests-234/234-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
@@ -20,6 +20,7 @@ npm i mapstronaut
 - Advanced rules capabilities
 - Automaps properties matching in both source and target (with type checking)
 - Built in Typescript
+- Supports parallel async mapping, with up to ~4x performance improvement over sequential
 - Fully tested
 
 ## Usage

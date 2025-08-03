@@ -92,6 +92,44 @@ const transformStructure = [
   },
 ];
 
+// Async structure for parallel benchmarks
+const asyncTransformStructure = [
+  { source: "id", target: "userId" },
+  {
+    source: "name",
+    target: "fullName",
+    transform: async (value: string) => {
+      // Simulate async work
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      return value.toUpperCase();
+    },
+  },
+  {
+    source: "email",
+    target: "contactEmail",
+    transform: async (value: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      return value.toLowerCase();
+    },
+  },
+  {
+    source: "address.street",
+    target: "location.streetAddress",
+    transform: async (value: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      return `Address: ${value}`;
+    },
+  },
+  {
+    source: "address.city",
+    target: "location.cityName",
+    transform: async (value: string) => {
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      return value.toUpperCase();
+    },
+  },
+];
+
 async function runBenchmarks() {
   const bench = new Bench({ time: 1000 });
 
@@ -111,6 +149,13 @@ async function runBenchmarks() {
     transformStructure,
   );
   const asyncMapper = new AsyncMapper<SourceData, TargetData>(complexStructure);
+  const asyncTransformMapper = new AsyncMapper<SourceData, Partial<TargetData>>(
+    asyncTransformStructure,
+  );
+  const asyncTransformParallelMapper = new AsyncMapper<
+    SourceData,
+    Partial<TargetData>
+  >(asyncTransformStructure, { parallelRun: true });
   const automapper = new Automapper<SourceData, SourceData>();
 
   // Single item benchmarks
@@ -127,6 +172,12 @@ async function runBenchmarks() {
     .add("Async mapping (single item)", async () => {
       await asyncMapper.map(singleItem!);
     })
+    .add("Async transform sequential (single item)", async () => {
+      await asyncTransformMapper.map(singleItem!);
+    })
+    .add("Async transform parallel (single item)", async () => {
+      await asyncTransformParallelMapper.map(singleItem!);
+    })
     .add("Automapping (single item)", () => {
       automapper.map(singleItem!);
     })
@@ -141,6 +192,16 @@ async function runBenchmarks() {
     })
     .add("Complex mapping (10 items)", () => {
       smallDataset.map((item) => complexMapper.map(item));
+    })
+    .add("Async transform sequential (10 items)", async () => {
+      await Promise.all(
+        smallDataset.map((item) => asyncTransformMapper.map(item)),
+      );
+    })
+    .add("Async transform parallel (10 items)", async () => {
+      await Promise.all(
+        smallDataset.map((item) => asyncTransformParallelMapper.map(item)),
+      );
     });
 
   // Medium dataset benchmarks
@@ -206,6 +267,21 @@ async function runBenchmarks() {
   if (fastest.result?.hz && slowest.result?.hz) {
     const speedDiff = fastest.result.hz / slowest.result.hz;
     console.log(`• Speed difference: ${speedDiff.toFixed(2)}x faster`);
+  }
+
+  // Compare parallel vs sequential async performance
+  const parallelTask = bench.tasks.find((task) =>
+    task.name.includes("parallel"),
+  );
+  const sequentialTask = bench.tasks.find((task) =>
+    task.name.includes("sequential"),
+  );
+
+  if (parallelTask?.result?.hz && sequentialTask?.result?.hz) {
+    const parallelSpeedup = parallelTask.result.hz / sequentialTask.result.hz;
+    console.log(
+      `• Parallel speedup: ${parallelSpeedup.toFixed(2)}x faster than sequential`,
+    );
   }
 }
 

@@ -11,8 +11,8 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "test": "mocha 'test/**/*.test.ts'",
-    "coverage": "c8 mocha",
+    "test": "mocha ./test/**/*.test.ts",
+    "coverage": "c8 mocha ./test/**/*.test.ts",
     "prebenchmark": "npm run build",
     "benchmark": "node dist/benchmark.js"
   },

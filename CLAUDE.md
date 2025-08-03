@@ -62,7 +62,7 @@ When adding a new feature or updating an existing one, use the following workflo
 - source : the jsonpath entry in the rule, accessing a source object property
 - mapper : the main Mapper class that maps from one object to another
 - outpath: an internal library that write object values with dot notation
-- automapper : or automapping, is writing recursively from one object to another when properties match
+- automapper : or automapping, is writing recursively from one object to another when properties match. The same properties MUST be present in both source and target objects.
 
 ## Features
 
@@ -160,4 +160,8 @@ See : src/types/mapper.ts
 
 Examples are stored in ./docs/examples.md.
 
-All examples should revolve around space themes.
+All examples and documentation should revolve around space themes.
+
+## Benchmark
+
+A script that runs a benchmark can be found in ./benchmark.ts.

@@ -31,6 +31,7 @@ export abstract class BaseMapper<
       skipNull: options?.skipNull ?? false,
       skipUndefined: options?.skipUndefined ?? true,
       jsonPathOptions: options?.jsonPathOptions ?? null,
+      parallelRun: options?.parallelRun ?? false,
     };
   }
 
@@ -82,6 +83,14 @@ export abstract class BaseMapper<
     this.options.skipUndefined = value;
   }
 
+  get parallelRun(): boolean {
+    return this.options.parallelRun;
+  }
+
+  set parallelRun(value: boolean) {
+    this.options.parallelRun = value;
+  }
+
   protected normalizeRule(rule: Rule): RuleObject {
     if (Array.isArray(rule)) {
       const [source, target] = rule as RuleArray;
@@ -98,13 +107,13 @@ export abstract class BaseMapper<
     return path;
   }
 
-  protected applyAutomap(source: UnknownTarget, result: UnknownTarget) {
+  protected applyAutomap(source: TSource, result: TTarget): TTarget {
     if (this.options.automap) {
       const automapper = new Automapper({
         checkType: this.options.automapCheckType,
       });
 
-      result = automapper.map(source, result);
+      result = automapper.map(source as any, result as any) as TTarget;
     }
 
     return result;

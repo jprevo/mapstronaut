@@ -7,6 +7,7 @@ export type MapperOptions = {
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
   jsonPathOptions?: JSONPath.JSONPathOptions | null;
+  parallelRun: boolean; // default false, on available on AsyncMapper
 };
 
 export type Rule = RuleArray | RuleObject;

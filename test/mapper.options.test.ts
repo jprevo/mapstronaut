@@ -62,11 +62,13 @@ describe("Mapper - Options", () => {
       mapper.assumeRoot = false;
       mapper.automap = false;
       mapper.skipUndefined = false;
+      mapper.parallelRun = true;
 
       assert.equal(mapper.skipNull, true);
       assert.equal(mapper.assumeRoot, false);
       assert.equal(mapper.automap, false);
       assert.equal(mapper.skipUndefined, false);
+      assert.equal(mapper.parallelRun, true);
     });
   });
 
