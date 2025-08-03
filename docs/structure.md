@@ -6,7 +6,7 @@ This document explains all the options available when defining mapping structure
 
 A mapping structure is an array of rules that define how to transform data from a source object to a target object. Each rule specifies a mapping operation with various configuration options.
 
-See [our JsonPath documentation](./jsonpath.md) for source property mapping examples. 
+See [our JsonPath documentation](./jsonpath.md) for source property parsing examples. 
 
 ## Rule Types
 
