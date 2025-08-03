@@ -1,35 +1,31 @@
 ![Mapstronaut Banner](./assets/banner.jpg)
 
-Mapstronaut is a full-featured JavaScript object mapper.
+Mapstronaut is a powerful and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
 ![Tests 234/234](https://img.shields.io/badge/tests-234/234-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
 
-## Installtion
+## Why Mapstronaut?
+- **Declarative Approach**: Define your mapping structure as an array of rules. It's easy to read, understand, and maintain.
+- **Powerful Data Selection**: Uses JSONPath to precisely select source properties, even from complex nested objects and arrays.
+- **Automapping**: Automatically maps properties with matching names and types, saving you from defining obvious mappings.
+- **Built-in Transformations**: Easily transform values during mapping, from simple calculations to complex asynchronous operations.
+- **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x) for I/O-heavy transformations.
+
+## Installation
 
 ```bash
 npm i mapstronaut
 ```
 
-## Main features
-
-- Works with node and browsers
-- Uses the amazing JsonPath-plus library for parsing
-- Advanced rules capabilities
-- Automaps properties matching in both source and target (with type checking)
-- Built in Typescript
-- Supports parallel async mapping, with up to ~4x performance improvement over sequential
-- Fully tested
 
 ## Usage
 
-### Basic example
+All examples will use the following `astronaut` source object:
 
 ```javascript
-import { mapObject } from "mapstronaut";
-
 const astronaut = {
   id: 12345,
   personalInfo: {
@@ -47,13 +43,21 @@ const astronaut = {
     { duration: 45, date: "1969-07-22" },
   ],
 };
+```
+
+### Basic Mapping
+
+Define a `structure` to map properties from a source object to a target. Properties with matching names (like `id`) are automapped.
+
+```javascript
+import { mapObject } from "mapstronaut";
 
 const structure = [
   ["personalInfo.name", "astronautName"],
   ["mission.name", "missionInfo.title"],
   ["mission.destination", "missionInfo.target"],
   {
-    source: "spaceWalks[*].duration",
+    source: "spaceWalks[*].duration", // Select all 'duration' values from the array
     target: "walkDurations",
   },
 ];
@@ -65,9 +69,10 @@ const target = {
 const result = mapObject(structure, astronaut, target);
 
 /*
+// Result:
 {
-  "id": 12345, // automapped
-  "astronautName": "Neil Armstrong", 
+  "id": 12345, // Automapped because the property name matches
+  "astronautName": "Neil Armstrong",
   "missionInfo": {
     "title": "Apollo 11",
     "target": "Moon"
@@ -77,9 +82,9 @@ const result = mapObject(structure, astronaut, target);
 */
 ```
 
-Using the same `astronaut` object as above :
+### Transforming Values
 
-### Transform example
+Use the `transform` function to modify a source value before it's assigned to the target.
 
 ```javascript
 const structure = [
@@ -91,25 +96,45 @@ const structure = [
 ];
 
 const result = mapObject(structure, astronaut);
-// { "currentAge": 95 }
+
+/*
+// Result (assuming the current year is 2025):
+{
+  "currentAge": 95
+}
+*/
 ```
 
-### Filter example
+### Filtering Properties
+
+Use the `filter` function to conditionally map a property. If the filter returns `false`, the property is omitted from the result.
 
 ```javascript
 const structure = [
   {
     source: "mission",
     target: "marsMission",
-    filter: (mission) => mission.destination === "Mars",
+    filter: (mission) => mission.destination === "Mars", // This will be false
   },
 ];
 
 const result = mapObject(structure, astronaut);
-// { "id": 12345, ....  } // marsMission is not present
+
+/*
+// Result:
+// The 'marsMission' property is not present because the filter returned false.
+// Automapped properties are still included.
+{
+  "id": 12345,
+  "rank": "Commander"
+  // ... other automapped properties
+}
+*/
 ```
 
-### Async mapping example
+### Asynchronous Mapping
+
+For I/O operations (like API calls), use `mapObjectAsync` and an `async` transform function. Mappings run in parallel for maximum efficiency.
 
 ```javascript
 import { mapObjectAsync } from "mapstronaut";
@@ -119,6 +144,7 @@ const structure = [
     source: "mission.destination",
     target: "destinationInfo",
     transform: async (destination) => {
+      // Example: fetch data from an external API
       const type = await externalSpaceApi.fetchType(destination);
       return { name: destination, type: type };
     },
@@ -126,23 +152,31 @@ const structure = [
 ];
 
 const result = await mapObjectAsync(structure, astronaut);
-// { "destinationInfo": { "name": "Moon", "type": "Celestial Body" } }
+
+/*
+// Result:
+{
+  // ... other automapped properties
+  "destinationInfo": { "name": "Moon", "type": "Celestial Body" }
+}
+*/
 ```
 
-[See more examples here](./docs/examples.md).
 
 ## Documentation
 
 - [Basic Usage](./docs/basic-usage.md)
 - [Options reference](./docs/options.md)
 - [Mapping rules (structure)](./docs/structure.md)
-- [JSONPath input examples](./docs/jsonpath.md)
+- [JSONPath source properties](./docs/jsonpath.md)
 - [Additional examples](./docs/examples.md)
 
 ## Contributions
 
+Contributions are welcome\! If you have a feature request, bug report, or want to improve the code, please feel free to open an issue or submit a pull request.
+
 ## Licence
 
-MIT
+This project is licensed under the **MIT License**.
 
-Initially Built by Jonathan Prevost
+Built by Jonathan Prevost.
