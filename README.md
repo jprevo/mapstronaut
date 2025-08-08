@@ -1,6 +1,6 @@
 ![Mapstronaut Banner](./assets/banner.jpg)
 
-Mapstronaut is a powerful and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
+Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
 ![Tests 234/234](https://img.shields.io/badge/tests-234/234-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
@@ -8,18 +8,20 @@ Mapstronaut is a powerful and flexible JavaScript/TypeScript library for transfo
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
 
 ## Why Mapstronaut?
+
 - **Declarative Approach**: Define your mapping structure as an array of rules. It's easy to read, understand, and maintain.
 - **Powerful Data Selection**: Uses JSONPath to precisely select source properties, even from complex nested objects and arrays.
 - **Automapping**: Automatically maps properties with matching names and types, saving you from defining obvious mappings.
 - **Built-in Transformations**: Easily transform values during mapping, from simple calculations to complex asynchronous operations.
-- **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x) for I/O-heavy transformations.
+- **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x in benchmarks) for I/O-heavy transformations.
+
+*Developer's note: I used Typescript for a long time before switching to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut.*
 
 ## Installation
 
 ```bash
 npm i mapstronaut
 ```
-
 
 ## Usage
 
