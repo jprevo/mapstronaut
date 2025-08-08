@@ -7,7 +7,7 @@ test/*.d.ts.map
 test/*.js
 test/*.js.map
 
-# Temporary
+# Build
 dist/
 
 # Logs
