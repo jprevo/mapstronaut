@@ -20,18 +20,14 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       return source.slice(0) as unknown as TTarget;
     }
 
-    // When no target is provided, return empty object (no properties to match)
     if (!target) {
       return {} as TTarget;
     }
 
-    // Start with the target itself to preserve reference
     const result = target;
-
     const sourceKeys = Object.keys(source);
     const targetKeys = Object.keys(target);
 
-    // Only map properties that exist in both source and target
     for (const key of sourceKeys) {
       if (targetKeys.includes(key)) {
         const sourceValue = (source as UnknownSource)[key];
@@ -75,7 +71,6 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
 
     if (target && key in target) {
       const targetValue = (target as UnknownTarget)[key];
-      // Allow null to map to any type, and allow any type to map to null
       if (
         sourceValue !== null &&
         targetValue !== null &&

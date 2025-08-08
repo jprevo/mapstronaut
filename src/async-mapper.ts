@@ -6,6 +6,7 @@ import type {
   AsyncRule,
   AsyncRuleObject,
   Rule,
+  RuleObject,
 } from "./types/mapper.js";
 
 export class AsyncMapper<
@@ -15,12 +16,10 @@ export class AsyncMapper<
   private asyncStructure: AsyncStructure;
 
   constructor(structure: AsyncStructure, options?: Partial<MapperOptions>) {
-    // Cast AsyncStructure to Rule[] for the base class
     super(structure as Rule[], options);
     this.asyncStructure = structure;
   }
 
-  // Override to return AsyncStructure while maintaining compatibility
   getAsyncStructure(): AsyncStructure {
     return [...this.asyncStructure];
   }
@@ -35,14 +34,12 @@ export class AsyncMapper<
     result = this.applyAutomap(source, result);
 
     if (this.options.parallelRun) {
-      // Process all rules in parallel
       await Promise.all(
         this.asyncStructure.map((rule) =>
           this.processRule(rule, source, result),
         ),
       );
     } else {
-      // Process rules sequentially
       for (const rule of this.asyncStructure) {
         await this.processRule(rule, source, result);
       }
@@ -58,9 +55,7 @@ export class AsyncMapper<
   ): Promise<void> {
     const ruleObj = this.normalizeAsyncRule(rule);
 
-    // Handle constant values
     if (ruleObj.constant !== undefined) {
-      // Apply filter to constant values if present
       if (
         ruleObj.filter &&
         !(await Promise.resolve(
@@ -70,30 +65,17 @@ export class AsyncMapper<
         return;
       }
 
-      let finalValue = ruleObj.constant;
-
-      // Apply transform to constant values if present
-      if (ruleObj.transform) {
-        finalValue = await Promise.resolve(
-          ruleObj.transform(ruleObj.constant, source, target),
-        );
-      }
-
-      // Apply failOn check for constant values
-      if (
-        ruleObj.failOn &&
-        (await Promise.resolve(ruleObj.failOn(finalValue, source, target)))
-      ) {
-        throw new Error(
-          `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
-        );
-      }
+      let finalValue = await this.transformAndFailOn(
+        ruleObj.constant,
+        ruleObj,
+        source,
+        target,
+      );
 
       this.outpath.write(target, ruleObj.target, finalValue);
       return;
     }
 
-    // Source is required if constant is not provided
     if (!ruleObj.source) {
       throw new Error("Rule must have either 'source' or 'constant' defined");
     }
@@ -101,12 +83,10 @@ export class AsyncMapper<
     const jsonPath = this.normalizeJsonPath(ruleObj.source);
     const data = this.extractData(source, jsonPath);
 
-    // Apply filter early - if filter returns false, skip this rule entirely
     if (ruleObj.filter && !(await ruleObj.filter(data, source, target))) {
       return;
     }
 
-    // Use defaultValue if data is null or undefined
     let valueToMap = data;
     if (
       (data === null || data === undefined) &&
@@ -115,27 +95,41 @@ export class AsyncMapper<
       valueToMap = ruleObj.defaultValue;
     }
 
-    // Apply transform function if present
-    if (ruleObj.transform) {
-      valueToMap = await ruleObj.transform(valueToMap, source, target);
+    valueToMap = await this.transformAndFailOn(
+      valueToMap,
+      ruleObj,
+      source,
+      target,
+    );
+
+    if (this.shouldSkip(valueToMap)) {
+      return;
     }
 
-    // Apply failOn check - if it returns true, throw error and stop mapping
-    if (ruleObj.failOn && (await ruleObj.failOn(valueToMap, source, target))) {
+    this.outpath.write(target, ruleObj.target, valueToMap);
+  }
+
+  protected async transformAndFailOn(
+    value: any,
+    ruleObj: AsyncRuleObject,
+    source: TSource,
+    target: TTarget,
+  ): Promise<any> {
+    if (ruleObj.transform) {
+      value = await Promise.resolve(ruleObj.transform(value, source, target));
+    }
+
+    // Apply failOn check for constant values
+    if (
+      ruleObj.failOn &&
+      (await Promise.resolve(ruleObj.failOn(value, source, target)))
+    ) {
       throw new Error(
         `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
       );
     }
 
-    // Apply skipNull and skipUndefined rules after transform processing
-    if (valueToMap === null && this.options.skipNull) {
-      return;
-    }
-    if (valueToMap === undefined && this.options.skipUndefined) {
-      return;
-    }
-
-    this.outpath.write(target, ruleObj.target, valueToMap);
+    return value;
   }
 
   private normalizeAsyncRule(rule: AsyncRule): AsyncRuleObject {

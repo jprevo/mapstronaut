@@ -51,10 +51,9 @@ export class OutPath<T = UnknownTarget> {
       const char = path[i];
 
       if (char === "\\") {
-        // Check if the next character is a dot to escape
         if (i + 1 < path.length && path[i + 1] === ".") {
           currentSegment += ".";
-          i += 2; // Skip both backslash and dot
+          i += 2;
         } else {
           currentSegment += char;
           i++;
@@ -69,7 +68,6 @@ export class OutPath<T = UnknownTarget> {
       }
     }
 
-    // Add the final segment
     segments.push(currentSegment);
 
     return segments;

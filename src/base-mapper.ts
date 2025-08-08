@@ -135,5 +135,17 @@ export abstract class BaseMapper<
     }
   }
 
+  protected shouldSkip(value: any): boolean {
+    if (value === null && this.options.skipNull) {
+      return true;
+    }
+
+    if (value === undefined && this.options.skipUndefined) {
+      return true;
+    }
+
+    return false;
+  }
+
   abstract map(source: TSource, target?: TTarget): TTarget | Promise<TTarget>;
 }
