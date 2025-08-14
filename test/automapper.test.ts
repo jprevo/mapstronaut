@@ -6,7 +6,7 @@ describe("Automapper", function () {
     it("should create with default configuration", function () {
       const automapper = new Automapper();
       const config = automapper.getConfiguration();
-      assert.strictEqual(config.checkType, true);
+      assert.strictEqual(config.checkType, false);
     });
 
     it("should create with custom configuration", function () {
@@ -18,7 +18,7 @@ describe("Automapper", function () {
     it("should merge partial configuration with defaults", function () {
       const automapper = new Automapper({});
       const config = automapper.getConfiguration();
-      assert.strictEqual(config.checkType, true);
+      assert.strictEqual(config.checkType, false);
     });
   });
 

@@ -27,7 +27,7 @@ export abstract class BaseMapper<
     return {
       assumeRoot: options?.assumeRoot ?? true,
       automap: options?.automap ?? true,
-      automapCheckType: options?.automapCheckType ?? true,
+      automapCheckType: options?.automapCheckType ?? false,
       skipNull: options?.skipNull ?? false,
       skipUndefined: options?.skipUndefined ?? true,
       jsonPathOptions: options?.jsonPathOptions ?? null,

@@ -6,7 +6,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
 
   constructor(configuration: Partial<AutomapperConfiguration> = {}) {
     this.configuration = {
-      checkType: true,
+      checkType: false,
       ...configuration,
     };
   }

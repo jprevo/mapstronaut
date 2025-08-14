@@ -86,7 +86,7 @@ When adding a new feature or updating an existing one, use the following workflo
 
 ```ts
 type AutomapperConfiguration = {
-  checkType: boolean; // default true, check if source/target property type matches
+  checkType: boolean; // default false, check if source/target property type matches
 };
 ```
 
