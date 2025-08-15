@@ -1,15 +1,12 @@
 import {
   AutomapArrayStrategy,
   type AutomapArrayStrategyFunction,
-  AutomapSimpleStrategy,
-  type AutomapStrategyFunction,
 } from "./automapper.js";
 
 export type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
   automapCheckType: boolean; // default false, should automapping check types ?
-  automapObjectStrategy?: AutomapStrategyFunction | AutomapSimpleStrategy; // default PreserveSource
   automapArrayStrategy?: AutomapArrayStrategyFunction | AutomapArrayStrategy; // default Replace
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?

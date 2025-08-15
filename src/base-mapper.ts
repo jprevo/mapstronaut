@@ -8,10 +8,7 @@ import type {
   RuleObject,
 } from "./types/mapper.js";
 import { Automapper } from "./automapper.js";
-import {
-  AutomapArrayStrategy,
-  AutomapSimpleStrategy,
-} from "./types/automapper.js";
+import { AutomapArrayStrategy } from "./types/automapper.js";
 
 export abstract class BaseMapper<
   TSource = UnknownSource,
@@ -32,8 +29,6 @@ export abstract class BaseMapper<
       assumeRoot: options?.assumeRoot ?? true,
       automap: options?.automap ?? true,
       automapCheckType: options?.automapCheckType ?? false,
-      automapObjectStrategy:
-        options?.automapObjectStrategy ?? AutomapSimpleStrategy.PreserveSource,
       automapArrayStrategy:
         options?.automapArrayStrategy ?? AutomapArrayStrategy.Replace,
       skipNull: options?.skipNull ?? false,
@@ -120,9 +115,6 @@ export abstract class BaseMapper<
     if (this.options.automap) {
       const automapper = new Automapper({
         checkType: this.options.automapCheckType,
-        automapObjectStrategy:
-          this.options.automapObjectStrategy ??
-          AutomapSimpleStrategy.PreserveSource,
         automapArrayStrategy:
           this.options.automapArrayStrategy ?? AutomapArrayStrategy.Replace,
       });

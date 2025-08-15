@@ -172,8 +172,9 @@ describe("Automapper", function () {
       const result = automapper.map(source, target);
 
       // Only user and settings are mapped (matching properties)
+      // details won't be added because it doesn't exist in the target's user object
       assert.deepStrictEqual(result, {
-        user: { name: "John", details: { age: 30 }, city: "Paris" },
+        user: { name: "John", city: "Paris" },
         settings: { theme: "dark", language: "en" },
       });
     });

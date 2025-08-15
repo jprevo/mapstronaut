@@ -212,7 +212,7 @@ describe("Mapper - Automap Functionality", function () {
         profile: {
           bio: "Developer", // nested automapped
           location: "NYC", // preserved from target
-          skills: ["JS", "TS"], // added from source
+          // skills is not added because it doesn't exist in target.profile
         },
         extra: "keep", // preserved from target
       });
