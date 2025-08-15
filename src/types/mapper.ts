@@ -1,9 +1,16 @@
-import type { UnknownSource, UnknownTarget } from "./generic.js";
+import {
+  AutomapArrayStrategy,
+  type AutomapArrayStrategyFunction,
+  AutomapSimpleStrategy,
+  type AutomapStrategyFunction,
+} from "./automapper.js";
 
 export type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
   automap: boolean; // default true, use automapping ?
   automapCheckType: boolean; // default false, should automapping check types ?
+  automapObjectStrategy?: AutomapStrategyFunction | AutomapSimpleStrategy; // default PreserveSource
+  automapArrayStrategy?: AutomapArrayStrategyFunction | AutomapArrayStrategy; // default Replace
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
   jsonPathOptions?: any; // json path plus specific options
@@ -21,8 +28,6 @@ type BaseRuleObject = {
   target: string; // outpath
   constant?: any;
   defaultValue?: any;
-  automapObjectStrategy?: AutomapStrategyFunction | AutomapSimpleStrategy;
-  automapArrayStrategy?: AutomapArrayStrategy;
 };
 
 export type RuleObject = BaseRuleObject & {
@@ -36,22 +41,6 @@ export type AsyncRuleObject = BaseRuleObject & {
   filter?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
   failOn?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
 };
-
-export type AutomapStrategyFunction = (
-  source: UnknownSource,
-  target: UnknownTarget,
-) => any;
-
-export enum AutomapSimpleStrategy {
-  PreserveTarget = "PreserveTarget",
-  PreserveSource = "PreserveSource",
-}
-
-export enum AutomapArrayStrategy {
-  Concatenate = "Concatenate", // append both array
-  Replace = "Replace", // replace target array by source array
-  MergeByIndex = "MergeByIndex", // replace target array values if they have values with same index in source
-}
 
 export type Structure = Rule[];
 export type AsyncStructure = AsyncRule[];
