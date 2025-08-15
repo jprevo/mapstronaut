@@ -3,15 +3,15 @@
 Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
 [![npm version](https://img.shields.io/npm/v/mapstronaut)](https://www.npmjs.com/package/mapstronaut)
-[![MIT License](https://img.shields.io/badge/licence-MIT-blue)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
-[![Tests 304/304](https://img.shields.io/badge/tests-304/304-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
-[![Coverage 98%](https://img.shields.io/badge/coverage-98%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
+[![MIT License](https://img.shields.io/github/license/jprevo/mapstronaut)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
+[![Tests 288/288](https://img.shields.io/badge/tests-304/304-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
+[![Coverage 99%](https://img.shields.io/badge/coverage-98%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
 
 ## Why Mapstronaut?
 
 - **Declarative Approach**: Define your mapping structure as an array of rules. It's easy to read, understand, and maintain.
 - **Advanced Data Selection**: Uses [JSONPath](https://www.npmjs.com/package/jsonpath-plus) to precisely select source properties, even from complex nested objects and arrays. Uses [dot-prop](https://www.npmjs.com/package/dot-prop) to select target properties.
-- **Automapping**: Automatically maps properties with matching names and types, saving you from defining obvious mappings.
+- **Automapping**: Can automatically map properties with matching names and types, saving you from defining obvious mappings.
 - **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost for I/O-heavy transformations.
 
 _Developer's note: I used Typescript for a long time before having to switch to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
