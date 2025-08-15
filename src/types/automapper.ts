@@ -14,5 +14,5 @@ export type AutomapArrayStrategyFunction = (
 export enum AutomapArrayStrategy {
   Concatenate = "Concatenate", // append both array
   Replace = "Replace", // replace target array by source array
-  MergeByIndex = "MergeByIndex", // replace target array values if they have values with same index in source
+  Merge = "Merge", // replace target array values if they have values with same index in source
 }

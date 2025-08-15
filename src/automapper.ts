@@ -134,7 +134,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       case AutomapArrayStrategy.Concatenate:
         return [...targetArray, ...sourceArray];
 
-      case AutomapArrayStrategy.MergeByIndex:
+      case AutomapArrayStrategy.Merge:
         const result = [...targetArray];
         for (let i = 0; i < sourceArray.length; i++) {
           if (sourceArray[i] !== undefined) {

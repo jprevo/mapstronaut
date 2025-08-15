@@ -116,7 +116,7 @@ describe("Automapper - Array Strategy Tests", function () {
   describe("AutomapArrayStrategy.MergeByIndex", function () {
     it("should merge arrays by index, replacing target values with source values", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { crew: ["Picard", "Data"] };
@@ -128,7 +128,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should preserve target values when source has fewer elements", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { officers: ["Riker"] };
@@ -145,7 +145,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should extend target array when source has more elements", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { captains: ["Sisko", "Archer", "Burnham", "Pike"] };
@@ -162,7 +162,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should skip undefined values in source array", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { ships: ["Voyager", undefined, "Enterprise"] };
@@ -178,7 +178,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should handle null values in source array", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { stations: ["DS9", null, "K-7"] };
@@ -192,7 +192,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should handle empty arrays correctly", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { weapons: [] };
@@ -345,7 +345,7 @@ describe("Automapper - Array Strategy Tests", function () {
     it("should apply array strategy when both are arrays with type checking", function () {
       const automapper = new Automapper({
         checkType: true,
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = {
@@ -366,7 +366,7 @@ describe("Automapper - Array Strategy Tests", function () {
   describe("Array Strategy Edge Cases", function () {
     it("should handle arrays with different primitive types using MergeByIndex", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { mixed: [42, "answer", true] };
@@ -378,7 +378,7 @@ describe("Automapper - Array Strategy Tests", function () {
 
     it("should handle sparse arrays with MergeByIndex", function () {
       const automapper = new Automapper({
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       const source = { sparse: [1, , 3] }; // eslint-disable-line no-sparse-arrays
@@ -443,7 +443,7 @@ describe("Automapper - Array Strategy Tests", function () {
     it("should preserve array strategy when only changing other options", function () {
       const automapper = new Automapper({
         checkType: false,
-        automapArrayStrategy: AutomapArrayStrategy.MergeByIndex,
+        automapArrayStrategy: AutomapArrayStrategy.Merge,
       });
 
       // Change only checkType
@@ -452,7 +452,7 @@ describe("Automapper - Array Strategy Tests", function () {
       const config = automapper.getConfiguration();
       assert.strictEqual(
         config.automapArrayStrategy,
-        AutomapArrayStrategy.MergeByIndex,
+        AutomapArrayStrategy.Merge,
       );
     });
   });
