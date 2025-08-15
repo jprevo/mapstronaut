@@ -158,6 +158,8 @@ const result = await mapper.map(spaceMissionData);
 - [Mapping rules](./docs/structure.md)
 - [Defining sources](./docs/sources.md)
 - [Defining targets](./docs/targets.md)
+- [Async mapping](./docs/async.md)
+- [Automapping](./docs/automapping.md)
 
 ## Contributions
 
