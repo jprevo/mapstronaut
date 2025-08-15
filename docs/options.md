@@ -4,33 +4,37 @@ This document explains the various configuration options available when using Ma
 
 ## Quick Reference
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `assumeRoot` | `true` | Automatically adds `$.` to JSONPath entries if not present |
-| `automap` | `true` | Enables automatic mapping of matching property names |
-| `automapCheckType` | `false` | Verifies type compatibility during automapping |
-| `skipNull` | `false` | Skips mapping null values from source |
-| `skipUndefined` | `true` | Skips mapping undefined values from source |
-| `jsonPathOptions` | `null` | Additional options for JSONPath library |
-| `parallelRun` | `false` | Runs async operations in parallel (AsyncMapper only) |
+| Option             | Default | Description                                                |
+| ------------------ | ------- | ---------------------------------------------------------- |
+| `assumeRoot`       | `true`  | Automatically adds `$.` to JSONPath entries if not present |
+| `automap`          | `true`  | Enables automatic mapping of matching property names       |
+| `automapCheckType` | `false` | Verifies type compatibility during automapping             |
+| `skipNull`         | `false` | Skips mapping null values from source                      |
+| `skipUndefined`    | `true`  | Skips mapping undefined values from source                 |
+| `jsonPathOptions`  | `null`  | Additional options for JSONPath library                    |
+| `parallelRun`      | `false` | Runs async operations in parallel (AsyncMapper only)       |
+| `parallelJobsLimit`| `0`     | Limits concurrent async jobs (0 = unlimited, AsyncMapper only) |
 
 ## MapperOptions
 
 The `MapperOptions` interface provides several configuration options to customize the mapping behavior:
 
 ### assumeRoot (boolean)
+
 - **Default**: `true`
 - **Description**: Automatically adds `$.` to JSONPath entries if not present, making structure configuration easier and more convenient.
 - **Example**:
+
   ```ts
   // With assumeRoot: true (default)
   const structure = [["name", "spaceship.name"]]; // Treated as $.name
-  
+
   // With assumeRoot: false
   const structure = [["$.name", "spaceship.name"]]; // Must explicitly specify root
   ```
 
 ### automap (boolean)
+
 - **Default**: `true`
 - **Description**: Enables automatic mapping of properties that exist in both source and target objects with matching names.
 - **Example**:
@@ -41,6 +45,7 @@ The `MapperOptions` interface provides several configuration options to customiz
   ```
 
 ### automapCheckType (boolean)
+
 - **Default**: `false`
 - **Description**: When automapping is enabled, this option determines whether to verify that source and target property types match before mapping.
 - **Example**:
@@ -52,6 +57,7 @@ The `MapperOptions` interface provides several configuration options to customiz
   ```
 
 ### skipNull (boolean)
+
 - **Default**: `false`
 - **Description**: When `true`, null values in the source object will not be mapped to the target.
 - **Example**:
@@ -62,6 +68,7 @@ The `MapperOptions` interface provides several configuration options to customiz
   ```
 
 ### skipUndefined (boolean)
+
 - **Default**: `true`
 - **Description**: When `true`, undefined values in the source object will not be mapped to the target.
 - **Example**:
@@ -72,6 +79,7 @@ The `MapperOptions` interface provides several configuration options to customiz
   ```
 
 ### jsonPathOptions (JSONPath.JSONPathOptions | null)
+
 - **Default**: `null`
 - **Description**: Additional options to pass to the underlying JSONPath library for advanced path resolution control.
 - **Example**:
@@ -79,31 +87,46 @@ The `MapperOptions` interface provides several configuration options to customiz
   const options: MapperOptions = {
     jsonPathOptions: {
       wrap: false,
-      sandbox: {}
-    }
+      sandbox: {},
+    },
   };
   ```
 
 ### parallelRun (boolean)
+
 - **Default**: `false`
-- **Description**: Only available on AsyncMapper. When `true`, all the mapping operations are done in parallel, which can increase mapping speed a lot, at the cost of a more *chaotic* process.
+- **Description**: Only available on AsyncMapper. When `true`, all the mapping operations are done in parallel, which can increase mapping speed a lot, at the cost of a more _chaotic_ process.
 - **Example**:
   ```ts
   const asyncMapper = new AsyncMapper(structure, { parallelRun: true });
   ```
 
+### parallelJobsLimit (number)
+
+- **Default**: `0` (unlimited)
+- **Description**: Only available on AsyncMapper when `parallelRun` is enabled. Restricts the number of concurrent async jobs running at once. Set to `0` for unlimited parallel jobs, or a positive number to limit concurrency.
+- **Example**:
+  ```ts
+  const asyncMapper = new AsyncMapper(structure, { 
+    parallelRun: true,
+    parallelJobsLimit: 5 // Limit to 5 concurrent operations
+  });
+  ```
+
 ## Usage Examples
 
 ### Basic Configuration
+
 ```ts
 const mapper = new Mapper(structure, {
   automap: true,
   skipNull: true,
-  assumeRoot: true
+  assumeRoot: true,
 });
 ```
 
 ### Advanced Configuration
+
 ```ts
 const asyncMapper = new AsyncMapper(structure, {
   automap: false,
@@ -111,21 +134,9 @@ const asyncMapper = new AsyncMapper(structure, {
   skipNull: false,
   skipUndefined: false,
   parallelRun: true,
+  parallelJobsLimit: 10,
   jsonPathOptions: {
-    wrap: false
-  }
+    wrap: false,
+  },
 });
-```
-
-### Space Mission Example
-```ts
-// Mapping satellite telemetry data
-const telemetryMapper = new Mapper(telemetryStructure, {
-  automap: true,           // Auto-map common fields like timestamp, altitude
-  skipNull: true,          // Ignore null sensor readings
-  skipUndefined: true,     // Ignore undefined measurements
-  automapCheckType: true   // Ensure data types match for safety-critical systems
-});
-
-const satellite = telemetryMapper.map(rawTelemetry);
 ```
