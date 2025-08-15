@@ -3,7 +3,7 @@
 Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
 [![npm version](https://img.shields.io/npm/v/mapstronaut)](https://www.npmjs.com/package/mapstronaut)
-[![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/licence-MIT-blue)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
 [![Tests 296/296](https://img.shields.io/badge/tests-296/296-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
 [![Coverage 98%](https://img.shields.io/badge/coverage-98%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
 
