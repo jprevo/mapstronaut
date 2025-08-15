@@ -82,7 +82,7 @@ Mapstronaut uses the `jsonpath-plus` library for JSONPath operations. For conven
 // AND conditions
 { source: "planets[?(@.habitable == true && @.distance < 50)]", target: "nearHabitablePlanets" }
 
-// OR conditions  
+// OR conditions
 { source: "crew[?(@.rank == 'Captain' || @.rank == 'Commander')]", target: "officers" }
 ```
 
@@ -131,18 +131,24 @@ const spaceStructure = [
   // Basic property mapping
   { source: "mission.name", target: "missionName" },
   { source: "mission.launchDate", target: "launched" },
-  
+
   // Array operations
   { source: "crew[*].name", target: "crewNames" },
   { source: "crew[0]", target: "commander" },
-  
+
   // Filtering
   { source: "equipment[?(@.critical == true)]", target: "criticalEquipment" },
   { source: "waypoints[?(@.type == 'planet')]", target: "planetaryStops" },
-  
+
   // Complex expressions
-  { source: "crew[?(@.specialization == 'engineer' && @.experience > 5)]", target: "seniorEngineers" },
-  { source: "..coordinates[?(@.x != null && @.y != null)]", target: "validCoordinates" }
+  {
+    source: "crew[?(@.specialization == 'engineer' && @.experience > 5)]",
+    target: "seniorEngineers",
+  },
+  {
+    source: "..coordinates[?(@.x != null && @.y != null)]",
+    target: "validCoordinates",
+  },
 ];
 ```
 
@@ -153,13 +159,16 @@ const spacecraftStructure = [
   // Nested object access
   { source: "systems.propulsion.type", target: "propulsionType" },
   { source: "systems.navigation.gps.enabled", target: "hasGPS" },
-  
+
   // Array filtering and transformation
   { source: "modules[?(@.operational == true)].name", target: "activeModules" },
   { source: "sensors[*].readings[-1:]", target: "latestReadings" },
-  
+
   // Recursive search
-  { source: "..temperature[?(@.value > 100)]", target: "overheatingComponents" }
+  {
+    source: "..temperature[?(@.value > 100)]",
+    target: "overheatingComponents",
+  },
 ];
 ```
 
