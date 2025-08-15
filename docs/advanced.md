@@ -196,14 +196,14 @@ const missionControlData = {
     personnel: 7,
     orbit: {
       height: 408,
-      inclination: 51.6
-    }
+      inclination: 51.6,
+    },
   },
   lastUpdate: "2024-03-15T10:30:00Z",
   systems: {
     power: "nominal",
-    communications: "optimal"
-  }
+    communications: "optimal",
+  },
 };
 
 // Mapping structure to populate the class instance
@@ -213,9 +213,9 @@ const structure = [
   ["station.orbit.height", "altitude"],
   {
     source: "systems.power",
-    target: "operational", 
-    transform: (power) => power === "nominal" || power === "optimal"
-  }
+    target: "operational",
+    transform: (power) => power === "nominal" || power === "optimal",
+  },
 ];
 
 // Create a SpaceStation instance as target
@@ -243,6 +243,7 @@ console.log(mappedStation.operational); // true
 ```
 
 This approach is particularly useful when:
+
 - You need to maintain class methods and behavior after mapping
 - Working with existing class instances that need data updates
 - Integrating with object-oriented codebases

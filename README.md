@@ -162,6 +162,13 @@ const result = await mapper.map(spaceMissionData);
 - [Automapping](./docs/automapping.md)
 - [Advanced Usage](./docs/advanced.md)
 
+## What's New in Version 2.0.0?
+
+- Using dot-prop for better target properties selection
+- Improved automapping with deep merging of object and arrays
+- Added maximum number of parallel jobs option in async mapping
+- Improved and tested documentation to help you get the most out of the library
+
 ## Contributions
 
 Contributions are welcome\! If you have a feature request, bug report, or want to improve the code, please feel free to open an issue or submit a pull request.
