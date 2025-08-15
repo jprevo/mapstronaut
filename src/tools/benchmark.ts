@@ -1,5 +1,5 @@
 import { Bench } from "tinybench";
-import { Mapper, AsyncMapper, Automapper, mapObject } from "./index.js";
+import { Mapper, AsyncMapper, Automapper, mapObject } from "../index.js";
 
 // Sample data structures for benchmarking
 interface SourceData {
