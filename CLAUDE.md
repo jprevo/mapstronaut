@@ -132,7 +132,7 @@ mapObject(structure, source, target?, options?);
 
 ### OutPath
 
-OutPath is an internal class that allows writing properties and subproperties in objects.
+OutPath is using dot-prop library for target mapping
 
 See: src/outpath.ts
 
@@ -148,6 +148,9 @@ console.log(obj.first.a): // demo
 outpath.write(obj, "first.b.test", false);
 console.log(obj.first.b.test); // false
 console.log(obj.first.a): // demo
+
+outpath.write(obj, "arr[0].name", "ex");
+console.log(obj.arr); [{ name: "ex" }]
 ```
 
 ### Structure
