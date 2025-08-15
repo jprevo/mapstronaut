@@ -7,7 +7,7 @@ It is used by default in Mapstronaut, and can be disabled with the `{ automap: f
 ## Basic Usage
 
 ```typescript
-import { Automapper } from 'mapstronaut';
+import { Automapper } from "mapstronaut";
 
 // Create a simple automapper
 const automapper = new Automapper();
@@ -17,7 +17,7 @@ const spaceStation = {
   name: "International Space Station",
   altitude: 408,
   crew: 7,
-  operational: true
+  operational: true,
 };
 
 // Target with matching properties
@@ -26,7 +26,7 @@ const stationInfo = {
   altitude: 0,
   crew: 0,
   operational: false,
-  launchDate: "1998-11-20" // This won't be overwritten
+  launchDate: "1998-11-20", // This won't be overwritten
 };
 
 // Automap matching properties
@@ -54,13 +54,13 @@ const automapper = new Automapper({ checkType: true });
 const spacecraft = {
   name: "Voyager 1",
   speed: "17000", // string
-  active: true
+  active: true,
 };
 
 const probe = {
   name: "",
   speed: 0, // number - type mismatch!
-  active: false
+  active: false,
 };
 
 // With checkType: true, speed won't be mapped due to type mismatch
@@ -79,29 +79,29 @@ console.log(result);
 Control how arrays are merged with different strategies:
 
 ```typescript
-import { AutomapArrayStrategy } from 'mapstronaut';
+import { AutomapArrayStrategy } from "mapstronaut";
 
 // Replace strategy (default)
 const replaceMapper = new Automapper({
-  automapArrayStrategy: AutomapArrayStrategy.Replace
+  automapArrayStrategy: AutomapArrayStrategy.Replace,
 });
 
 // Concatenate strategy
 const concatMapper = new Automapper({
-  automapArrayStrategy: AutomapArrayStrategy.Concatenate
+  automapArrayStrategy: AutomapArrayStrategy.Concatenate,
 });
 
 // Merge strategy
 const mergeMapper = new Automapper({
-  automapArrayStrategy: AutomapArrayStrategy.Merge
+  automapArrayStrategy: AutomapArrayStrategy.Merge,
 });
 
 const mission = {
-  astronauts: ["Neil Armstrong", "Buzz Aldrin"]
+  astronauts: ["Neil Armstrong", "Buzz Aldrin"],
 };
 
 const targetMission = {
-  astronauts: ["Michael Collins", "John Glenn"]
+  astronauts: ["Michael Collins", "John Glenn"],
 };
 
 // Replace: source replaces target
@@ -124,22 +124,20 @@ Define custom logic for array handling:
 ```typescript
 const customMapper = new Automapper({
   automapArrayStrategy: (key, sourceArray, targetArray) => {
-    if (key === 'coordinates') {
+    if (key === "coordinates") {
       // Average coordinates for spacecraft positioning
-      return sourceArray.map((val, idx) => 
-        (val + (targetArray[idx] || 0)) / 2
-      );
+      return sourceArray.map((val, idx) => (val + (targetArray[idx] || 0)) / 2);
     }
     return sourceArray; // Default behavior for other arrays
-  }
+  },
 });
 
 const position1 = {
-  coordinates: [100, 200, 300]
+  coordinates: [100, 200, 300],
 };
 
 const position2 = {
-  coordinates: [200, 400, 600]
+  coordinates: [200, 400, 600],
 };
 
 console.log(customMapper.map(position1, position2));
@@ -158,13 +156,13 @@ const sourceSpacecraft = {
   systems: {
     propulsion: {
       type: "Warp Drive",
-      speed: 9.5
+      speed: 9.5,
     },
     navigation: {
       type: "Computer",
-      accuracy: 99.9
-    }
-  }
+      accuracy: 99.9,
+    },
+  },
 };
 
 const targetSpacecraft = {
@@ -173,16 +171,17 @@ const targetSpacecraft = {
     propulsion: {
       type: "",
       speed: 0,
-      efficiency: 85 // This will be preserved
+      efficiency: 85, // This will be preserved
     },
     navigation: {
       type: "",
-      accuracy: 0
+      accuracy: 0,
     },
-    shields: { // This entire object will be preserved
-      strength: 100
-    }
-  }
+    shields: {
+      // This entire object will be preserved
+      strength: 100,
+    },
+  },
 };
 
 const result = automapper.map(sourceSpacecraft, targetSpacecraft);
@@ -215,7 +214,7 @@ The Automapper works with class instances:
 class Spacecraft {
   name: string = "";
   fuel: number = 0;
-  
+
   launch() {
     console.log(`${this.name} is launching!`);
   }
@@ -225,7 +224,7 @@ class SpaceShuttle {
   name: string = "";
   fuel: number = 0;
   crew: number = 0;
-  
+
   dock() {
     console.log(`${this.name} is docking!`);
   }
@@ -236,7 +235,7 @@ const automapper = new Automapper();
 const falcon9 = {
   name: "Falcon 9",
   fuel: 95,
-  stages: 2
+  stages: 2,
 };
 
 const shuttle = new SpaceShuttle();
@@ -263,15 +262,15 @@ console.log(config); // { checkType: false }
 // Update configuration
 automapper.setConfiguration({
   checkType: true,
-  automapArrayStrategy: AutomapArrayStrategy.Concatenate
+  automapArrayStrategy: AutomapArrayStrategy.Concatenate,
 });
 
 // Configuration is merged, not replaced
 const newConfig = automapper.getConfiguration();
 console.log(newConfig);
-// { 
-//   checkType: true, 
-//   automapArrayStrategy: "Concatenate" 
+// {
+//   checkType: true,
+//   automapArrayStrategy: "Concatenate"
 // }
 ```
 
@@ -285,13 +284,13 @@ Undefined source values are skipped:
 const source = {
   name: "Hubble",
   altitude: undefined,
-  active: true
+  active: true,
 };
 
 const target = {
   name: "",
   altitude: 547,
-  active: false
+  active: false,
 };
 
 const result = automapper.map(source, target);

@@ -4,17 +4,17 @@ This document explains the various configuration options available when using Ma
 
 ## Quick Reference
 
-| Option                | Default   | Description                                                    |
-| --------------------- | --------- | -------------------------------------------------------------- |
-| `assumeRoot`          | `true`    | Automatically adds `$.` to JSONPath entries if not present     |
-| `automap`             | `true`    | Enables automatic mapping of matching property names           |
-| `automapCheckType`    | `false`   | Verifies type compatibility during automapping                 |
-| `automapArrayStrategy`| `Replace` | Strategy for merging arrays during automapping                 |
-| `skipNull`            | `false`   | Skips mapping null values from source                          |
-| `skipUndefined`       | `true`    | Skips mapping undefined values from source                     |
-| `jsonPathOptions`     | `null`    | Additional options for JSONPath library                        |
-| `parallelRun`         | `false`   | Runs async operations in parallel (AsyncMapper only)           |
-| `parallelJobsLimit`   | `0`       | Limits concurrent async jobs (0 = unlimited, AsyncMapper only) |
+| Option                 | Default   | Description                                                    |
+| ---------------------- | --------- | -------------------------------------------------------------- |
+| `assumeRoot`           | `true`    | Automatically adds `$.` to JSONPath entries if not present     |
+| `automap`              | `true`    | Enables automatic mapping of matching property names           |
+| `automapCheckType`     | `false`   | Verifies type compatibility during automapping                 |
+| `automapArrayStrategy` | `Replace` | Strategy for merging arrays during automapping                 |
+| `skipNull`             | `false`   | Skips mapping null values from source                          |
+| `skipUndefined`        | `true`    | Skips mapping undefined values from source                     |
+| `jsonPathOptions`      | `null`    | Additional options for JSONPath library                        |
+| `parallelRun`          | `false`   | Runs async operations in parallel (AsyncMapper only)           |
+| `parallelJobsLimit`    | `0`       | Limits concurrent async jobs (0 = unlimited, AsyncMapper only) |
 
 ## MapperOptions
 
@@ -67,27 +67,34 @@ The `MapperOptions` interface provides several configuration options to customiz
   - `AutomapArrayStrategy.Merge`: Merges arrays by index, replacing target values where source has values at the same index
   - Custom function: Provide your own strategy function with signature `(key: string, source: any[], target: any[]) => any`
 - **Example**:
+
   ```ts
   import { AutomapArrayStrategy } from "mapstronaut";
-  
+
   // Source: { crew: ["Neil", "Buzz"] }
   // Target: { crew: ["Michael"] }
-  
+
   // Replace (default): { crew: ["Neil", "Buzz"] }
-  const replaceMapper = new Mapper([], { automapArrayStrategy: AutomapArrayStrategy.Replace });
-  
+  const replaceMapper = new Mapper([], {
+    automapArrayStrategy: AutomapArrayStrategy.Replace,
+  });
+
   // Concatenate: { crew: ["Michael", "Neil", "Buzz"] }
-  const concatMapper = new Mapper([], { automapArrayStrategy: AutomapArrayStrategy.Concatenate });
-  
+  const concatMapper = new Mapper([], {
+    automapArrayStrategy: AutomapArrayStrategy.Concatenate,
+  });
+
   // MergeByIndex: { crew: ["Neil", "Buzz"] }
-  const mergeMapper = new Mapper([], { automapArrayStrategy: AutomapArrayStrategy.Merge });
-  
+  const mergeMapper = new Mapper([], {
+    automapArrayStrategy: AutomapArrayStrategy.Merge,
+  });
+
   // Custom function
   const customMapper = new Mapper([], {
     automapArrayStrategy: (key, source, target) => {
       // Custom logic for combining arrays
       return [...new Set([...target, ...source])]; // Remove duplicates
-    }
+    },
   });
   ```
 

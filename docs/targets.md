@@ -73,12 +73,12 @@ const spacecraftStructure = [
   // Basic properties
   { source: "name", target: "identification.name" },
   { source: "registry", target: "identification.registry" },
-  
-  // Systems configuration  
+
+  // Systems configuration
   { source: "engineType", target: "systems.propulsion.type" },
   { source: "fuelLevel", target: "systems.propulsion.fuel.current" },
   { source: "navigationMode", target: "systems.navigation.mode" },
-  
+
   // Crew assignments
   { source: "captainName", target: "crew.command.captain.name" },
   { source: "captainRank", target: "crew.command.captain.rank" },
@@ -116,15 +116,15 @@ const missionStructure = [
   // Mission metadata
   { source: "missionId", target: "mission.id" },
   { source: "objective", target: "mission.objectives.primary" },
-  
+
   // Timeline
   { source: "launchDate", target: "timeline.launch.scheduled" },
   { source: "duration", target: "timeline.duration.estimated" },
-  
+
   // Destinations
   { source: "primaryDestination", target: "destinations[0].name" },
   { source: "secondaryDestination", target: "destinations[1].name" },
-  
+
   // Equipment
   { source: "communicationSystem", target: "equipment.communication.primary" },
   { source: "backupComms", target: "equipment.communication.backup" },
@@ -138,12 +138,18 @@ const crewStructure = [
   // Command crew
   { source: "commanderName", target: "command.commander.personal.name" },
   { source: "commanderAge", target: "command.commander.personal.age" },
-  { source: "commanderExperience", target: "command.commander.qualifications.experience" },
-  
+  {
+    source: "commanderExperience",
+    target: "command.commander.qualifications.experience",
+  },
+
   // Engineering crew
   { source: "chiefEngineer", target: "departments.engineering.chief.name" },
-  { source: "assistantEngineers", target: "departments.engineering.assistants" },
-  
+  {
+    source: "assistantEngineers",
+    target: "departments.engineering.assistants",
+  },
+
   // Science crew
   { source: "scienceOfficer", target: "departments.science.officer.name" },
   { source: "researchers", target: "departments.science.researchers" },
@@ -182,7 +188,7 @@ When mapping to an existing target object, Mapstronaut will merge new values int
 ```ts
 const existingSpacecraft = {
   identification: { registry: "NCC-1701" },
-  systems: { shields: { status: "operational" } }
+  systems: { shields: { status: "operational" } },
 };
 
 // Mapping with target will preserve existing data
