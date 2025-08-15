@@ -24,141 +24,122 @@ npm i mapstronaut
 
 ## Usage
 
-All examples will use the following `astronaut` source object:
+All examples will use the following space mission data:
 
-```javascript
-const astronaut = {
-  id: 12345,
-  personalInfo: {
-    name: "Neil Armstrong",
-    birthYear: 1930,
-  },
+```typescript
+const spaceMissionData = {
   mission: {
-    name: "Apollo 11",
-    destination: "Moon",
-    launchDate: "1969-07-16",
+    id: "artemis-3",
+    name: "Artemis III",
+    status: "planned",
+    launch: {
+      date: "2027-07-15T14:30:00Z",
+      site: "Kennedy Space Center"
+    }
   },
-  rank: "Commander",
-  spaceWalks: [
-    { duration: 151, date: "1969-07-21" },
-    { duration: 45, date: "1969-07-22" }, // this one is not true btw
+  crew: [
+    { id: "cmdr-001", name: "Sarah Chen", role: "commander", experience: 2840 },
+    { id: "plt-002", name: "Marcus Rodriguez", role: "pilot", experience: 1650 }
   ],
+  spacecraft: {
+    name: "Orion",
+    modules: ["crew", "service"],
+    fuel: { type: "liquid", amount: 95.5 }
+  }
 };
 ```
 
 ### Basic Mapping
 
-Define a `structure` to map properties from a source object to a target. Properties with matching names (like `id`) are automapped.
-
-```javascript
-import { mapObject } from "mapstronaut";
-
+```typescript
 const structure = [
-  ["personalInfo.name", "astronautName"],
-  ["mission.name", "missionInfo.title"],
-  ["mission.destination", "missionInfo.target"],
-  {
-    source: "spaceWalks[*].duration", // Select all 'duration' values from the array
-    target: "walkDurations",
-  },
+  ['mission.name', 'missionTitle'],
+  ['mission.launch.date', 'scheduledDate'],
+  ['crew[0].name', 'commander'],
+  ['spacecraft.fuel.amount', 'spacecraft.fuelLevel']
 ];
 
-const target = {
-  id: null,
-};
+const mapper = new Mapper(structure);
+const result = mapper.map(spaceMissionData);
 
-const result = mapObject(structure, astronaut, target);
-
-/*
 // Result:
-{
-  "id": 12345, // Automapped because the property name matches
-  "astronautName": "Neil Armstrong",
-  "missionInfo": {
-    "title": "Apollo 11",
-    "target": "Moon"
-  },
-  "walkDurations": [151, 45]
-}
-*/
+// {
+//   missionTitle: "Artemis III",
+//   scheduledDate: "2027-07-15T14:30:00Z",
+//   commander: "Sarah Chen"
+//   spacecraft: {
+//     fuelLevel: 95.5
+//   }
+// }
 ```
 
-### Transforming Values
+### Transforming and Filtering
 
-Use the `transform` function to modify a source value before it's assigned to the target.
+Apply transformations and conditional logic during mapping:
 
-```javascript
+```typescript
 const structure = [
   {
-    source: "personalInfo.birthYear",
-    target: "currentAge",
-    transform: (birthYear) => new Date().getFullYear() - birthYear,
+    source: 'mission.launch.date',
+    target: 'launchYear',
+    transform: (date) => new Date(date).getFullYear()
   },
-];
-
-const result = mapObject(structure, astronaut);
-
-/*
-// Result (assuming the current year is 2025):
-{
-  "currentAge": 95
-}
-*/
-```
-
-### Filtering Properties
-
-Use the `filter` function to conditionally map a property. If the filter returns `false`, the property is omitted from the result.
-
-```javascript
-const structure = [
   {
-    source: "mission",
-    target: "marsMission",
-    filter: (mission) => mission.destination === "Mars", // This will be false
+    source: 'crew',
+    target: 'activeCrew',
+    filter: (crew, source) => source.mission.status === 'in-progress'
   },
+  {
+    source: 'spacecraft.fuel.amount',
+    target: 'fuelStatus',
+    transform: (amount) => amount > 90 ? 'ready' : 'needs-refuel'
+  }
 ];
 
-const result = mapObject(structure, astronaut);
+const mapper = new Mapper(structure);
+const result = mapper.map(spaceMissionData);
 
-/*
 // Result:
-// The 'marsMission' property is not present because the filter returned false.
-// Automapped properties are still included.
-{
-  "id": 12345,
-  "rank": "Commander"
-  // ... other automapped properties
-}
-*/
+// {
+//   launchYear: 2027,
+//   fuelStatus: "ready"
+// }
+// // activeCrew is filtered out
 ```
 
 ### Asynchronous Mapping
 
-```javascript
-import { mapObjectAsync } from "mapstronaut";
+```typescript
+// Simulate external API calls
+const fetchWeatherData = (site) => 
+  new Promise(resolve => setTimeout(() => resolve({ temp: 22, conditions: 'clear' }), 100));
+
+const fetchCrewCertification = (crewId) =>
+  new Promise(resolve => setTimeout(() => resolve({ certified: true, expires: '2027-01-01' }), 150));
 
 const structure = [
+  ['mission.name', 'title'],
   {
-    source: "mission.destination",
-    target: "destinationInfo",
-    transform: async (destination) => {
-      // Example: fetch data from an external API
-      const type = await externalSpaceApi.fetchType(destination);
-      return { name: destination, type: type };
-    },
+    source: 'mission.launch.site',
+    target: 'weather',
+    transform: async (site) => await fetchWeatherData(site)
   },
+  {
+    source: 'crew[0].id',
+    target: 'commanderStatus',
+    transform: async (id) => await fetchCrewCertification(id)
+  }
 ];
 
-const result = await mapObjectAsync(structure, astronaut);
+const mapper = new AsyncMapper(structure, { parallelRun: true });
+const result = await mapper.map(spaceMissionData);
 
-/*
 // Result:
-{
-  // ... other automapped properties
-  "destinationInfo": { "name": "Moon", "type": "Celestial Body" }
-}
-*/
+// {
+//   title: "Artemis III",
+//   weather: { temp: 22, conditions: 'clear' },
+//   commanderStatus: { certified: true, expires: '2027-01-01' }
+// }
 ```
 
 ## Documentation
