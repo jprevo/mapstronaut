@@ -57,6 +57,8 @@ const spaceMissionData = {
 ### Basic Mapping
 
 ```typescript
+import { mapObject } from "mapstronaut";
+
 const structure = [
   ["mission.name", "missionTitle"],
   ["mission.launch.date", "scheduledDate"],
@@ -64,8 +66,7 @@ const structure = [
   ["spacecraft.fuel.amount", "spacecraft.fuelLevel"],
 ];
 
-const mapper = new Mapper(structure);
-const result = mapper.map(spaceMissionData);
+const result = mapObject(structure, spaceMissionData);
 
 // Result:
 // {
@@ -83,6 +84,8 @@ const result = mapper.map(spaceMissionData);
 Apply transformations and conditional logic during mapping:
 
 ```typescript
+import { mapObject } from "mapstronaut";
+
 const structure = [
   {
     source: "mission.launch.date",
@@ -101,8 +104,7 @@ const structure = [
   },
 ];
 
-const mapper = new Mapper(structure);
-const result = mapper.map(spaceMissionData);
+const result = mapObject(structure, spaceMissionData);
 
 // Result:
 // {
@@ -115,6 +117,8 @@ const result = mapper.map(spaceMissionData);
 ### Asynchronous Mapping
 
 ```typescript
+import { mapObjectAsync } from "mapstronaut";
+
 // Simulate external API calls
 const fetchWeatherData = (site) =>
   new Promise((resolve) =>
@@ -140,8 +144,9 @@ const structure = [
   },
 ];
 
-const mapper = new AsyncMapper(structure, { parallelRun: true });
-const result = await mapper.map(spaceMissionData);
+const result = await mapObjectAsync(structure, spaceMissionData, undefined, {
+  parallelRun: true,
+});
 
 // Result:
 // {
