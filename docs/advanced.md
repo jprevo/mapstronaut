@@ -154,9 +154,96 @@ const asyncStructure = [
 ];
 
 const asyncMapper = new AsyncMapper(asyncStructure, {
-    parallelRun: true,
-    parallelJobsLimit: 3
+  parallelRun: true,
+  parallelJobsLimit: 3,
 });
 const result = await asyncMapper.map(spaceMissionData);
 // Result: { vessel: { name: 'Artemis V', certified: true }, flightPlan: { trajectory: 'trans-lunar-injection' }, personnel: { commander: { name: 'Sarah Kim', role: 'commander', experience: 3200, certified: true, missionReady: true } }, assessment: { riskLevel: 'low' }, logistics: { supplies: { food: 44.800000000000004, water: 39.199999999999996, oxygen: 21 } }, category: 'deep-space' }
 ```
+
+## Mapping to Class Instances
+
+Mapstronaut can map data directly into class instances, preserving the class methods and structure while updating properties from the source data.
+
+```ts
+// Define a SpaceStation class
+class SpaceStation {
+  constructor(name = "", crew = 0, altitude = 0) {
+    this.name = name;
+    this.crew = crew;
+    this.altitude = altitude;
+    this.operational = true;
+  }
+
+  getStatus() {
+    return `${this.name}: ${this.crew} crew members at ${this.altitude}km altitude`;
+  }
+
+  isFullyCrewed() {
+    return this.crew >= 6;
+  }
+
+  updateOperationalStatus() {
+    this.operational = this.crew > 0 && this.altitude > 300;
+    return this.operational;
+  }
+}
+
+// Source data from mission control
+const missionControlData = {
+  station: {
+    identifier: "International Space Station",
+    personnel: 7,
+    orbit: {
+      height: 408,
+      inclination: 51.6
+    }
+  },
+  lastUpdate: "2024-03-15T10:30:00Z",
+  systems: {
+    power: "nominal",
+    communications: "optimal"
+  }
+};
+
+// Mapping structure to populate the class instance
+const structure = [
+  ["station.identifier", "name"],
+  ["station.personnel", "crew"],
+  ["station.orbit.height", "altitude"],
+  {
+    source: "systems.power",
+    target: "operational", 
+    transform: (power) => power === "nominal" || power === "optimal"
+  }
+];
+
+// Create a SpaceStation instance as target
+const stationInstance = new SpaceStation("Unknown Station", 0, 0);
+
+// Map the data into the existing class instance
+const mapper = new Mapper(structure);
+const mappedStation = mapper.map(missionControlData, stationInstance);
+
+// The result is the same instance, now populated with data
+console.log(mappedStation === stationInstance); // true
+console.log(mappedStation.getStatus()); // "International Space Station: 7 crew members at 408km altitude"
+console.log(mappedStation.isFullyCrewed()); // true
+console.log(mappedStation.updateOperationalStatus()); // true
+
+// Class methods are preserved and work with the mapped data
+console.log(typeof mappedStation.getStatus); // "function"
+console.log(typeof mappedStation.isFullyCrewed); // "function"
+
+// The class instance now contains the mapped data
+console.log(mappedStation.name); // "International Space Station"
+console.log(mappedStation.crew); // 7
+console.log(mappedStation.altitude); // 408
+console.log(mappedStation.operational); // true
+```
+
+This approach is particularly useful when:
+- You need to maintain class methods and behavior after mapping
+- Working with existing class instances that need data updates
+- Integrating with object-oriented codebases
+- Preserving type information and method bindings
