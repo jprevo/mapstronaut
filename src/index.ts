@@ -3,7 +3,7 @@ export { OutPath } from "./outpath.js";
 export { Mapper, mapObject } from "./mapper.js";
 export { AsyncMapper, mapObjectAsync } from "./async-mapper.js";
 export { BaseMapper } from "./base-mapper.js";
-export type { AutomapperConfiguration } from "./types/automapper.js";
+export type { AutomapperOptions } from "./types/automapper.js";
 export type {
   MapperOptions,
   Structure,

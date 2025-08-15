@@ -1,6 +1,6 @@
 import type { UnknownSource, UnknownTarget } from "./generic.js";
 
-export type AutomapperConfiguration = {
+export type AutomapperOptions = {
   checkType: boolean;
   automapArrayStrategy?: AutomapArrayStrategyFunction | AutomapArrayStrategy;
 };

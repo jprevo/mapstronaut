@@ -1,14 +1,14 @@
 import {
   AutomapArrayStrategy,
   type AutomapArrayStrategyFunction,
-  type AutomapperConfiguration,
+  type AutomapperOptions,
 } from "./types/automapper.js";
 import type { UnknownSource, UnknownTarget } from "./types/generic.js";
 
 export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
-  private configuration: AutomapperConfiguration;
+  private configuration: AutomapperOptions;
 
-  constructor(configuration: Partial<AutomapperConfiguration> = {}) {
+  constructor(configuration: Partial<AutomapperOptions> = {}) {
     this.configuration = {
       checkType: false,
       ...configuration,
@@ -160,11 +160,11 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     );
   }
 
-  getConfiguration(): AutomapperConfiguration {
+  getConfiguration(): AutomapperOptions {
     return { ...this.configuration };
   }
 
-  setConfiguration(configuration: Partial<AutomapperConfiguration>): void {
+  setConfiguration(configuration: Partial<AutomapperOptions>): void {
     this.configuration = {
       ...this.configuration,
       ...configuration,

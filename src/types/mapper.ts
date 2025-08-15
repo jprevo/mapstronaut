@@ -4,15 +4,24 @@ import {
 } from "./automapper.js";
 
 export type MapperOptions = {
-  assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
-  automap: boolean; // default true, use automapping ?
-  automapCheckType: boolean; // default false, should automapping check types ?
-  automapArrayStrategy?: AutomapArrayStrategyFunction | AutomapArrayStrategy; // default Replace
-  skipNull: boolean; // default false, should null values in source not be mapped ?
-  skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
-  jsonPathOptions?: any; // json path plus specific options
-  parallelRun: boolean; // default false, only available on AsyncMapper
-  parallelJobsLimit: number; // default 0 (unlimited), restricts the number of parallel jobs running
+  // default true, add $. to JSONPath entries if not present for easier structure configuration
+  assumeRoot: boolean;
+  // default true, use automapping ?
+  automap: boolean;
+  // default false, should automapping check types ?
+  automapCheckType: boolean;
+  // default Replace, array merging strategy
+  automapArrayStrategy?: AutomapArrayStrategyFunction | AutomapArrayStrategy;
+  // default false, should null values in source not be mapped ?
+  skipNull: boolean;
+  // default true, should undefined values in source not be mapper ?
+  skipUndefined: boolean;
+  // json path plus specific options
+  jsonPathOptions?: any;
+  // default false, only available on AsyncMapper
+  parallelRun: boolean;
+  // default 0 (unlimited), restricts the number of parallel jobs running
+  parallelJobsLimit: number;
 };
 
 export type Rule = RuleArray | RuleObject;
