@@ -14,7 +14,9 @@
     "test": "mocha ./test/**/*.test.ts",
     "coverage": "c8 mocha ./test/**/*.test.ts",
     "prebenchmark": "npm run build",
-    "benchmark": "node dist/benchmark.js"
+    "benchmark": "node dist/benchmark.js",
+    "pretest:docs": "npm run build",
+    "test:docs": "node dist/src/tools/test-docs.js"
   },
   "files": [
     "dist"

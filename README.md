@@ -34,18 +34,23 @@ const spaceMissionData = {
     status: "planned",
     launch: {
       date: "2027-07-15T14:30:00Z",
-      site: "Kennedy Space Center"
-    }
+      site: "Kennedy Space Center",
+    },
   },
   crew: [
     { id: "cmdr-001", name: "Sarah Chen", role: "commander", experience: 2840 },
-    { id: "plt-002", name: "Marcus Rodriguez", role: "pilot", experience: 1650 }
+    {
+      id: "plt-002",
+      name: "Marcus Rodriguez",
+      role: "pilot",
+      experience: 1650,
+    },
   ],
   spacecraft: {
     name: "Orion",
     modules: ["crew", "service"],
-    fuel: { type: "liquid", amount: 95.5 }
-  }
+    fuel: { type: "liquid", amount: 95.5 },
+  },
 };
 ```
 
@@ -53,10 +58,10 @@ const spaceMissionData = {
 
 ```typescript
 const structure = [
-  ['mission.name', 'missionTitle'],
-  ['mission.launch.date', 'scheduledDate'],
-  ['crew[0].name', 'commander'],
-  ['spacecraft.fuel.amount', 'spacecraft.fuelLevel']
+  ["mission.name", "missionTitle"],
+  ["mission.launch.date", "scheduledDate"],
+  ["crew[0].name", "commander"],
+  ["spacecraft.fuel.amount", "spacecraft.fuelLevel"],
 ];
 
 const mapper = new Mapper(structure);
@@ -80,20 +85,20 @@ Apply transformations and conditional logic during mapping:
 ```typescript
 const structure = [
   {
-    source: 'mission.launch.date',
-    target: 'launchYear',
-    transform: (date) => new Date(date).getFullYear()
+    source: "mission.launch.date",
+    target: "launchYear",
+    transform: (date) => new Date(date).getFullYear(),
   },
   {
-    source: 'crew',
-    target: 'activeCrew',
-    filter: (crew, source) => source.mission.status === 'in-progress'
+    source: "crew",
+    target: "activeCrew",
+    filter: (crew, source) => source.mission.status === "in-progress",
   },
   {
-    source: 'spacecraft.fuel.amount',
-    target: 'fuelStatus',
-    transform: (amount) => amount > 90 ? 'ready' : 'needs-refuel'
-  }
+    source: "spacecraft.fuel.amount",
+    target: "fuelStatus",
+    transform: (amount) => (amount > 90 ? "ready" : "needs-refuel"),
+  },
 ];
 
 const mapper = new Mapper(structure);
@@ -111,24 +116,28 @@ const result = mapper.map(spaceMissionData);
 
 ```typescript
 // Simulate external API calls
-const fetchWeatherData = (site) => 
-  new Promise(resolve => setTimeout(() => resolve({ temp: 22, conditions: 'clear' }), 100));
+const fetchWeatherData = (site) =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ temp: 22, conditions: "clear" }), 100),
+  );
 
 const fetchCrewCertification = (crewId) =>
-  new Promise(resolve => setTimeout(() => resolve({ certified: true, expires: '2027-01-01' }), 150));
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ certified: true, expires: "2027-01-01" }), 150),
+  );
 
 const structure = [
-  ['mission.name', 'title'],
+  ["mission.name", "title"],
   {
-    source: 'mission.launch.site',
-    target: 'weather',
-    transform: async (site) => await fetchWeatherData(site)
+    source: "mission.launch.site",
+    target: "weather",
+    transform: async (site) => await fetchWeatherData(site),
   },
   {
-    source: 'crew[0].id',
-    target: 'commanderStatus',
-    transform: async (id) => await fetchCrewCertification(id)
-  }
+    source: "crew[0].id",
+    target: "commanderStatus",
+    transform: async (id) => await fetchCrewCertification(id),
+  },
 ];
 
 const mapper = new AsyncMapper(structure, { parallelRun: true });
