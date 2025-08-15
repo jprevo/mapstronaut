@@ -4,8 +4,8 @@ Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for tran
 
 [![npm version](https://img.shields.io/npm/v/mapstronaut)](https://www.npmjs.com/package/mapstronaut)
 [![MIT License](https://img.shields.io/github/license/jprevo/mapstronaut)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
-[![Tests 288/288](https://img.shields.io/badge/tests-304/304-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
-[![Coverage 99%](https://img.shields.io/badge/coverage-98%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
+[![Tests 288/288](https://img.shields.io/badge/tests-288/288-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
+[![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
 
 ## Why Mapstronaut?
 
