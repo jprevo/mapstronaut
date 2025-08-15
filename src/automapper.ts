@@ -60,14 +60,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
           } else {
             // No strategy, use default behavior
             // If both source and target values are objects (but not arrays), merge them recursively
-            if (
-              sourceValue &&
-              targetValue &&
-              typeof sourceValue === "object" &&
-              typeof targetValue === "object" &&
-              !Array.isArray(sourceValue) &&
-              !Array.isArray(targetValue)
-            ) {
+            if (this.areBothObjects(sourceValue, targetValue)) {
               // Deep merge with conflict resolution
               (result as UnknownTarget)[key] = this.deepMerge(
                 targetValue,
@@ -159,14 +152,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
           continue;
         }
 
-        if (
-          sourceValue &&
-          targetValue &&
-          typeof sourceValue === "object" &&
-          typeof targetValue === "object" &&
-          !Array.isArray(sourceValue) &&
-          !Array.isArray(targetValue)
-        ) {
+        if (this.areBothObjects(sourceValue, targetValue)) {
           // Recursively deep merge nested objects with the same strategy
           result[key] = this.deepMergeWithStrategy(
             targetValue,
@@ -183,8 +169,6 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
                 result[key] = targetValue;
                 break;
               case AutomapSimpleStrategy.PreserveSource:
-                result[key] = sourceValue;
-                break;
               default:
                 result[key] = sourceValue;
                 break;
@@ -209,17 +193,11 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       return strategy(sourceValue, targetValue);
     }
 
-    switch (strategy) {
-      case AutomapSimpleStrategy.PreserveTarget:
-      case AutomapSimpleStrategy.PreserveSource:
-        if (this.areBothObjects(sourceValue, targetValue)) {
-          return this.deepMergeWithStrategy(targetValue, sourceValue, strategy);
-        }
-
-        return sourceValue;
-      default:
-        return sourceValue;
+    if (this.areBothObjects(sourceValue, targetValue)) {
+      return this.deepMergeWithStrategy(targetValue, sourceValue, strategy);
     }
+
+    return sourceValue;
   }
 
   private resolveConflict(
@@ -245,9 +223,9 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
 
       if (
         normalizedRule.target === propertyKey &&
-        normalizedRule.automapStrategy
+        normalizedRule.automapObjectStrategy
       ) {
-        return normalizedRule.automapStrategy;
+        return normalizedRule.automapObjectStrategy;
       }
     }
 

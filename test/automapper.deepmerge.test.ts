@@ -149,7 +149,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "ship",
-            automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
           },
         ];
 
@@ -182,7 +182,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "federation",
-            automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
           },
         ];
 
@@ -221,7 +221,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "shipName",
-            automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
           },
         ];
 
@@ -238,7 +238,7 @@ describe("Automapper - Deep Merge", () => {
         const automapper = new Automapper({}, structure);
         const result = automapper.map(source, target);
 
-        // When both values are primitives and strategy is PreserveTarget, 
+        // When both values are primitives and strategy is PreserveTarget,
         // applyStrategy returns sourceValue (line 215)
         assert.strictEqual(result.shipName, "Enterprise");
         assert.strictEqual(result.crewCount, 430);
@@ -250,7 +250,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "ship",
-            automapStrategy: AutomapSimpleStrategy.PreserveSource,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveSource,
           },
         ];
 
@@ -282,7 +282,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "ship",
-            automapStrategy: (sourceValue: any, targetValue: any) => {
+            automapObjectStrategy: (sourceValue: any, targetValue: any) => {
               return {
                 name: `${targetValue.name} & ${sourceValue.name}`,
                 crew: sourceValue.crew + targetValue.crew,
@@ -321,15 +321,15 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "ship",
-            automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
           },
           {
             target: "mission",
-            automapStrategy: AutomapSimpleStrategy.PreserveSource,
+            automapObjectStrategy: AutomapSimpleStrategy.PreserveSource,
           },
           {
             target: "crew",
-            automapStrategy: (sourceValue: any, targetValue: any) => ({
+            automapObjectStrategy: (sourceValue: any, targetValue: any) => ({
               total: sourceValue.total + targetValue.total,
               departments: Math.max(
                 sourceValue.departments,
@@ -393,7 +393,7 @@ describe("Automapper - Deep Merge", () => {
         const structure: Rule[] = [
           {
             target: "ship",
-            automapStrategy: "unknown_strategy" as any, // force unknown strategy
+            automapObjectStrategy: "unknown_strategy" as any, // force unknown strategy
           },
         ];
 
@@ -414,11 +414,9 @@ describe("Automapper - Deep Merge", () => {
         const automapper = new Automapper({}, structure);
         const result = automapper.map(source, target);
 
-        // Unknown strategy falls through to default case (line 217) which returns sourceValue
-        // This replaces the entire ship object with the source ship object
         assert.strictEqual(result.ship.name, "Enterprise");
         assert.strictEqual(result.ship.crew, 430);
-        assert.strictEqual(result.ship.registry, undefined); // target registry is lost
+        assert.strictEqual(result.ship.registry, "NCC-74656");
       });
     });
 
@@ -562,7 +560,7 @@ describe("Automapper - Deep Merge", () => {
       const structure: Rule[] = [
         {
           target: "ship",
-          automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+          automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
         },
       ];
 
@@ -593,7 +591,7 @@ describe("Automapper - Deep Merge", () => {
       const structure: Rule[] = [
         {
           target: "federation",
-          automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+          automapObjectStrategy: AutomapSimpleStrategy.PreserveTarget,
         },
       ];
 
