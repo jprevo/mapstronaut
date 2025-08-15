@@ -195,31 +195,31 @@ describe("Outpath", () => {
       assert.equal(instance.nested?.value, 123);
     });
 
-    it("should throw error on consecutive dots in path (empty segments)", () => {
+    it("should handle consecutive dots in path (creates empty string property)", () => {
       const obj: any = {};
       const outpath = new OutPath();
 
-      assert.throws(() => {
-        outpath.write(obj, "user..name", "John");
-      }, /Invalid path: path cannot contain empty segments/);
+      outpath.write(obj, "user..name", "John");
+
+      assert.equal(obj.user[""].name, "John");
     });
 
-    it("should throw error on leading dot in path", () => {
+    it("should handle leading dot in path (creates empty string property)", () => {
       const obj: any = {};
       const outpath = new OutPath();
 
-      assert.throws(() => {
-        outpath.write(obj, ".user.name", "John");
-      }, /Invalid path: path cannot contain empty segments/);
+      outpath.write(obj, ".user.name", "John");
+
+      assert.equal(obj[""].user.name, "John");
     });
 
-    it("should throw error on trailing dot in path", () => {
+    it("should handle trailing dot in path (creates empty string property)", () => {
       const obj: any = {};
       const outpath = new OutPath();
 
-      assert.throws(() => {
-        outpath.write(obj, "user.name.", "John");
-      }, /Invalid path: path cannot contain empty segments/);
+      outpath.write(obj, "user.name.", "John");
+
+      assert.equal(obj.user.name[""], "John");
     });
 
     it("should handle escaped dots in property names", () => {

@@ -51,6 +51,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "dot-prop": "^9.0.0",
     "jsonpath-plus": "^10.3.0"
   }
 }
