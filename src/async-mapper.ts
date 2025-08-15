@@ -6,22 +6,25 @@ import type {
   AsyncRule,
   AsyncRuleObject,
   Rule,
-  RuleObject,
 } from "./types/mapper.js";
+import { AsyncRuleProcessor } from "./mapper/rule-processor.js";
+import { ConcurrencyController } from "./mapper/concurrency-controller.js";
 
 export class AsyncMapper<
   TSource = UnknownSource,
   TTarget = UnknownTarget,
 > extends BaseMapper<TSource, TTarget> {
   private asyncStructure: AsyncStructure;
+  private ruleProcessor: AsyncRuleProcessor<TSource, TTarget>;
 
   constructor(structure: AsyncStructure, options?: Partial<MapperOptions>) {
     super(structure as Rule[], options);
     this.asyncStructure = structure;
+    this.ruleProcessor = new AsyncRuleProcessor(this.outpath, this.options);
   }
 
   getAsyncStructure(): AsyncStructure {
-    return [...this.asyncStructure];
+    return this.asyncStructure;
   }
 
   setAsyncStructure(structure: AsyncStructure): void {
@@ -33,142 +36,30 @@ export class AsyncMapper<
     let result = target ?? ({} as TTarget);
     result = this.applyAutomap(source, result);
 
+    const processRule = async (rule: AsyncRule): Promise<void> => {
+      const ruleObj = this.normalizeRule(rule as Rule);
+
+      await this.ruleProcessor.processRule(
+        ruleObj,
+        source,
+        result,
+        (src, path) => this.extractData(src, path),
+      );
+    };
+
     if (this.options.parallelRun) {
-      await this.executeWithLimitedConcurrency(
+      await ConcurrencyController.executeWithLimitedConcurrency(
         this.asyncStructure,
-        (rule) => this.processRule(rule, source, result),
+        processRule,
         this.options.parallelJobsLimit,
       );
     } else {
       for (const rule of this.asyncStructure) {
-        await this.processRule(rule, source, result);
+        await processRule(rule);
       }
     }
 
     return result;
-  }
-
-  private async executeWithLimitedConcurrency(
-    rules: AsyncRule[],
-    processRule: (rule: AsyncRule) => Promise<void>,
-    limit: number,
-  ): Promise<void> {
-    if (limit <= 0) {
-      // Unlimited concurrency - use existing Promise.all approach
-      await Promise.all(rules.map((rule) => processRule(rule)));
-      return;
-    }
-
-    // Limited concurrency using a pool pattern
-    const executing = new Set<Promise<void>>();
-
-    for (const rule of rules) {
-      const promise = processRule(rule).finally(() => {
-        executing.delete(promise);
-      });
-
-      executing.add(promise);
-
-      if (executing.size >= limit) {
-        await Promise.race(executing);
-      }
-    }
-
-    // Wait for all remaining promises to complete
-    await Promise.all(executing);
-  }
-
-  private async processRule(
-    rule: AsyncRule,
-    source: TSource,
-    target: TTarget,
-  ): Promise<void> {
-    const ruleObj = this.normalizeAsyncRule(rule);
-
-    if (ruleObj.constant !== undefined) {
-      if (
-        ruleObj.filter &&
-        !(await Promise.resolve(
-          ruleObj.filter(ruleObj.constant, source, target),
-        ))
-      ) {
-        return;
-      }
-
-      let finalValue = await this.transformAndFailOn(
-        ruleObj.constant,
-        ruleObj,
-        source,
-        target,
-      );
-
-      this.outpath.write(target, ruleObj.target, finalValue);
-      return;
-    }
-
-    if (!ruleObj.source) {
-      throw new Error("Rule must have either 'source' or 'constant' defined");
-    }
-
-    const jsonPath = this.normalizeJsonPath(ruleObj.source);
-    const data = this.extractData(source, jsonPath);
-
-    if (ruleObj.filter && !(await ruleObj.filter(data, source, target))) {
-      return;
-    }
-
-    let valueToMap = data;
-    if (
-      (data === null || data === undefined) &&
-      ruleObj.defaultValue !== undefined
-    ) {
-      valueToMap = ruleObj.defaultValue;
-    }
-
-    valueToMap = await this.transformAndFailOn(
-      valueToMap,
-      ruleObj,
-      source,
-      target,
-    );
-
-    if (this.shouldSkip(valueToMap)) {
-      return;
-    }
-
-    this.outpath.write(target, ruleObj.target, valueToMap);
-  }
-
-  protected async transformAndFailOn(
-    value: any,
-    ruleObj: AsyncRuleObject,
-    source: TSource,
-    target: TTarget,
-  ): Promise<any> {
-    if (ruleObj.transform) {
-      value = await Promise.resolve(ruleObj.transform(value, source, target));
-    }
-
-    // Apply failOn check for constant values
-    if (
-      ruleObj.failOn &&
-      (await Promise.resolve(ruleObj.failOn(value, source, target)))
-    ) {
-      throw new Error(
-        `Mapping failed: condition failed for rule with target '${ruleObj.target}'`,
-      );
-    }
-
-    return value;
-  }
-
-  private normalizeAsyncRule(rule: AsyncRule): AsyncRuleObject {
-    if (Array.isArray(rule)) {
-      const [source, target] = rule;
-      return { source, target };
-    }
-
-    return rule as AsyncRuleObject;
   }
 }
 
@@ -181,6 +72,8 @@ export async function mapObjectAsync<
   target?: TTarget,
   options?: Partial<MapperOptions>,
 ): Promise<TTarget> {
-  const mapper = new AsyncMapper<TSource, TTarget>(structure, options);
-  return mapper.map(source, target);
+  return new AsyncMapper<TSource, TTarget>(structure, options).map(
+    source,
+    target,
+  );
 }

@@ -1,12 +1,7 @@
 import { JSONPath } from "jsonpath-plus";
 import { OutPath } from "./outpath.js";
 import type { UnknownSource, UnknownTarget } from "./types/generic.js";
-import type {
-  MapperOptions,
-  Rule,
-  RuleArray,
-  RuleObject,
-} from "./types/mapper.js";
+import type { MapperOptions, Rule, RuleObject } from "./types/mapper.js";
 import { Automapper } from "./automapper.js";
 import { AutomapArrayStrategy } from "./types/automapper.js";
 
@@ -18,29 +13,16 @@ export abstract class BaseMapper<
   protected options: MapperOptions;
   protected outpath: OutPath<TTarget>;
 
+  abstract map(source: TSource, target?: TTarget): TTarget | Promise<TTarget>;
+
   protected constructor(structure: Rule[], options?: Partial<MapperOptions>) {
     this.structure = structure;
     this.options = this.mergeWithDefaults(options);
     this.outpath = new OutPath<TTarget>();
   }
 
-  protected mergeWithDefaults(options?: Partial<MapperOptions>): MapperOptions {
-    return {
-      assumeRoot: options?.assumeRoot ?? true,
-      automap: options?.automap ?? true,
-      automapCheckType: options?.automapCheckType ?? false,
-      automapArrayStrategy:
-        options?.automapArrayStrategy ?? AutomapArrayStrategy.Replace,
-      skipNull: options?.skipNull ?? false,
-      skipUndefined: options?.skipUndefined ?? true,
-      jsonPathOptions: options?.jsonPathOptions ?? null,
-      parallelRun: options?.parallelRun ?? false,
-      parallelJobsLimit: options?.parallelJobsLimit ?? 0,
-    };
-  }
-
   getOptions(): MapperOptions {
-    return { ...this.options };
+    return this.options;
   }
 
   setOptions(options: Partial<MapperOptions>): void {
@@ -48,7 +30,7 @@ export abstract class BaseMapper<
   }
 
   getStructure(): Rule[] {
-    return [...this.structure];
+    return this.structure;
   }
 
   setStructure(structure: Rule[]): void {
@@ -95,20 +77,28 @@ export abstract class BaseMapper<
     this.options.parallelRun = value;
   }
 
-  protected normalizeRule(rule: Rule): RuleObject {
-    if (Array.isArray(rule)) {
-      const [source, target] = rule as RuleArray;
-      return { source, target };
-    }
-    return rule as RuleObject;
+  protected mergeWithDefaults(options?: Partial<MapperOptions>): MapperOptions {
+    return {
+      assumeRoot: options?.assumeRoot ?? true,
+      automap: options?.automap ?? true,
+      automapCheckType: options?.automapCheckType ?? false,
+      automapArrayStrategy:
+        options?.automapArrayStrategy ?? AutomapArrayStrategy.Replace,
+      skipNull: options?.skipNull ?? false,
+      skipUndefined: options?.skipUndefined ?? true,
+      jsonPathOptions: options?.jsonPathOptions ?? null,
+      parallelRun: options?.parallelRun ?? false,
+      parallelJobsLimit: options?.parallelJobsLimit ?? 0,
+    };
   }
 
-  protected normalizeJsonPath(path: string): string {
-    if (this.options.assumeRoot && !path.startsWith("$.")) {
-      return `$.${path}`;
+  protected normalizeRule(rule: Rule): RuleObject {
+    if (Array.isArray(rule)) {
+      const [source, target] = rule;
+      return { source, target };
     }
 
-    return path;
+    return rule;
   }
 
   protected applyAutomap(source: TSource, result: TTarget): TTarget {
@@ -127,31 +117,16 @@ export abstract class BaseMapper<
 
   protected extractData(source: TSource, jsonPath: string): any {
     try {
-      const result = JSONPath({
+      return JSONPath({
         ...(this.options.jsonPathOptions ?? {}),
         path: jsonPath,
         json: source as any,
         wrap: false,
       });
-      return result;
     } catch (error) {
       throw new Error(
         `Failed to extract data using JSONPath '${jsonPath}': ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
-
-  protected shouldSkip(value: any): boolean {
-    if (value === null && this.options.skipNull) {
-      return true;
-    }
-
-    if (value === undefined && this.options.skipUndefined) {
-      return true;
-    }
-
-    return false;
-  }
-
-  abstract map(source: TSource, target?: TTarget): TTarget | Promise<TTarget>;
 }
