@@ -1,4 +1,5 @@
-import JSONPath from "jsonpath-plus";
+import { JSONPath } from "jsonpath-plus";
+import type { UnknownSource, UnknownTarget } from "./generic.js";
 
 export type MapperOptions = {
   assumeRoot: boolean; // default true, add $. to JSONPath entries if not present for easier structure configuration
@@ -6,7 +7,7 @@ export type MapperOptions = {
   automapCheckType: boolean; // default false, should automapping check types ?
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
-  jsonPathOptions?: JSONPath.JSONPathOptions | null;
+  jsonPathOptions?: any;
   parallelRun: boolean; // default false, on available on AsyncMapper
 };
 
@@ -20,6 +21,7 @@ type BaseRuleObject = {
   target: string; // outpath
   constant?: any;
   defaultValue?: any;
+  automapStrategy?: AutomapStrategy | AutomapSimpleStrategy;
 };
 
 export type RuleObject = BaseRuleObject & {
@@ -33,6 +35,16 @@ export type AsyncRuleObject = BaseRuleObject & {
   filter?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
   failOn?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
 };
+
+export type AutomapStrategy = (
+  source: UnknownSource,
+  target: UnknownTarget,
+) => any;
+
+export enum AutomapSimpleStrategy {
+  PreserveTarget = "PreserveTarget",
+  PreserveSource = "PreserveSource",
+}
 
 export type Structure = Rule[];
 export type AsyncStructure = AsyncRule[];

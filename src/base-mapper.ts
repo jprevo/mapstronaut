@@ -109,9 +109,12 @@ export abstract class BaseMapper<
 
   protected applyAutomap(source: TSource, result: TTarget): TTarget {
     if (this.options.automap) {
-      const automapper = new Automapper({
-        checkType: this.options.automapCheckType,
-      });
+      const automapper = new Automapper(
+        {
+          checkType: this.options.automapCheckType,
+        },
+        this.structure,
+      );
 
       result = automapper.map(source as any, result as any) as TTarget;
     }

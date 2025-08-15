@@ -1,14 +1,21 @@
 import type { AutomapperConfiguration } from "./types/automapper.js";
 import type { UnknownSource, UnknownTarget } from "./types/generic.js";
+import type { Rule, RuleObject, AutomapStrategy } from "./types/mapper.js";
+import { AutomapSimpleStrategy } from "./types/mapper.js";
 
 export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
   private configuration: AutomapperConfiguration;
+  private structure: Rule[];
 
-  constructor(configuration: Partial<AutomapperConfiguration> = {}) {
+  constructor(
+    configuration: Partial<AutomapperConfiguration> = {},
+    structure: Rule[] = [],
+  ) {
     this.configuration = {
       checkType: false,
       ...configuration,
     };
+    this.structure = structure;
   }
 
   map(source: TSource, target?: TTarget): TTarget {
@@ -35,19 +42,37 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
         if (this.shouldMapProperty(key, sourceValue, target)) {
           const targetValue = (target as UnknownTarget)[key];
 
-          // If both source and target values are objects (but not arrays), merge them recursively
-          if (
-            sourceValue &&
-            targetValue &&
-            typeof sourceValue === "object" &&
-            typeof targetValue === "object" &&
-            !Array.isArray(sourceValue) &&
-            !Array.isArray(targetValue)
-          ) {
-            // For nested objects, merge all properties from both source and target
-            (result as UnknownTarget)[key] = { ...targetValue, ...sourceValue };
+          // Check if there's a strategy for this property
+          const strategy = this.findAutomapStrategy(key);
+
+          if (strategy) {
+            // Apply strategy to the entire property (object or primitive)
+            const resolvedValue = this.applyStrategy(
+              strategy,
+              targetValue,
+              sourceValue,
+            );
+            (result as UnknownTarget)[key] = resolvedValue;
           } else {
-            (result as UnknownTarget)[key] = sourceValue;
+            // No strategy, use default behavior
+            // If both source and target values are objects (but not arrays), merge them recursively
+            if (
+              sourceValue &&
+              targetValue &&
+              typeof sourceValue === "object" &&
+              typeof targetValue === "object" &&
+              !Array.isArray(sourceValue) &&
+              !Array.isArray(targetValue)
+            ) {
+              // Deep merge with conflict resolution
+              (result as UnknownTarget)[key] = this.deepMerge(
+                targetValue,
+                sourceValue,
+              );
+            } else {
+              // Default: source wins
+              (result as UnknownTarget)[key] = sourceValue;
+            }
           }
         }
       }
@@ -84,6 +109,166 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     return true;
   }
 
+  private deepMerge(target: any, source: any): any {
+    const result = { ...target };
+
+    for (const key in source) {
+      if (source.hasOwnProperty(key)) {
+        const sourceValue = source[key];
+        const targetValue = result[key];
+
+        // Check if this property should be mapped based on type checking
+        if (!this.shouldMapProperty(key, sourceValue, result)) {
+          continue;
+        }
+
+        if (this.areBothObjects(sourceValue, targetValue)) {
+          // Recursively deep merge nested objects
+          result[key] = this.deepMerge(targetValue, sourceValue);
+        } else if (targetValue !== undefined && sourceValue !== undefined) {
+          // Handle conflict resolution for properties that exist in both
+          result[key] = this.resolveConflict(targetValue, sourceValue, key);
+        } else {
+          // No conflict, use source value
+          result[key] = sourceValue;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private deepMergeWithStrategy(
+    target: any,
+    source: any,
+    strategy: AutomapSimpleStrategy | AutomapStrategy,
+  ): any {
+    const result = { ...target };
+
+    for (const key in source) {
+      if (source.hasOwnProperty(key)) {
+        const sourceValue = source[key];
+        const targetValue = result[key];
+
+        // Check if this property should be mapped based on type checking
+        if (!this.shouldMapProperty(key, sourceValue, result)) {
+          continue;
+        }
+
+        if (
+          sourceValue &&
+          targetValue &&
+          typeof sourceValue === "object" &&
+          typeof targetValue === "object" &&
+          !Array.isArray(sourceValue) &&
+          !Array.isArray(targetValue)
+        ) {
+          // Recursively deep merge nested objects with the same strategy
+          result[key] = this.deepMergeWithStrategy(
+            targetValue,
+            sourceValue,
+            strategy,
+          );
+        } else if (targetValue !== undefined && sourceValue !== undefined) {
+          // Handle conflict based on strategy
+          if (typeof strategy === "function") {
+            result[key] = strategy(sourceValue, targetValue);
+          } else {
+            switch (strategy) {
+              case AutomapSimpleStrategy.PreserveTarget:
+                result[key] = targetValue;
+                break;
+              case AutomapSimpleStrategy.PreserveSource:
+                result[key] = sourceValue;
+                break;
+              default:
+                result[key] = sourceValue;
+                break;
+            }
+          }
+        } else {
+          // No conflict, use source value
+          result[key] = sourceValue;
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private applyStrategy(
+    strategy: AutomapStrategy | AutomapSimpleStrategy,
+    targetValue: any,
+    sourceValue: any,
+  ): any {
+    if (typeof strategy === "function") {
+      return strategy(sourceValue, targetValue);
+    }
+
+    switch (strategy) {
+      case AutomapSimpleStrategy.PreserveTarget:
+      case AutomapSimpleStrategy.PreserveSource:
+        if (this.areBothObjects(sourceValue, targetValue)) {
+          return this.deepMergeWithStrategy(targetValue, sourceValue, strategy);
+        }
+
+        return sourceValue;
+      default:
+        return sourceValue;
+    }
+  }
+
+  private resolveConflict(
+    targetValue: any,
+    sourceValue: any,
+    propertyKey: string,
+  ): any {
+    const strategy = this.findAutomapStrategy(propertyKey);
+
+    if (strategy) {
+      return this.applyStrategy(strategy, targetValue, sourceValue);
+    }
+
+    return sourceValue;
+  }
+
+  private findAutomapStrategy(
+    propertyKey: string,
+  ): AutomapStrategy | AutomapSimpleStrategy | undefined {
+    // Look for a rule that targets this property and has an automapStrategy
+    for (const rule of this.structure) {
+      const normalizedRule = this.normalizeRule(rule);
+
+      if (
+        normalizedRule.target === propertyKey &&
+        normalizedRule.automapStrategy
+      ) {
+        return normalizedRule.automapStrategy;
+      }
+    }
+
+    return undefined;
+  }
+
+  private normalizeRule(rule: Rule): RuleObject {
+    if (Array.isArray(rule)) {
+      const [source, target] = rule;
+      return { source, target };
+    }
+    return rule as RuleObject;
+  }
+
+  private areBothObjects(sourceValue: any, targetValue: any) {
+    return (
+      sourceValue &&
+      targetValue &&
+      typeof sourceValue === "object" &&
+      typeof targetValue === "object" &&
+      !Array.isArray(sourceValue) &&
+      !Array.isArray(targetValue)
+    );
+  }
+
   getConfiguration(): AutomapperConfiguration {
     return { ...this.configuration };
   }
@@ -93,5 +278,13 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       ...this.configuration,
       ...configuration,
     };
+  }
+
+  getStructure(): Rule[] {
+    return [...this.structure];
+  }
+
+  setStructure(structure: Rule[]): void {
+    this.structure = structure;
   }
 }
