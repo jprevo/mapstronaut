@@ -2,15 +2,15 @@
 
 Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
-![Tests 296/296](https://img.shields.io/badge/tests-296/296-green)
-![Coverage 98%](https://img.shields.io/badge/coverage-98%25-green)
-![Types Provided](https://img.shields.io/badge/types-provided-blue)
-![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
+[![npm version](https://img.shields.io/npm/v/mapstronaut)](https://www.npmjs.com/package/mapstronaut)
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)](https://github.com/jprevo/mapstronaut/blob/main/LICENSE)
+[![Tests 296/296](https://img.shields.io/badge/tests-296/296-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
+[![Coverage 98%](https://img.shields.io/badge/coverage-98%25-green)](https://github.com/jprevo/mapstronaut/tree/main/test)
 
 ## Why Mapstronaut?
 
 - **Declarative Approach**: Define your mapping structure as an array of rules. It's easy to read, understand, and maintain.
-- **Powerful Data Selection**: Uses JSONPath to precisely select source properties, even from complex nested objects and arrays.
+- **Advanced Data Selection**: Uses  [JSONPath](https://www.npmjs.com/package/jsonpath-plus) to precisely select source properties, even from complex nested objects and arrays. Uses [dot-prop](https://www.npmjs.com/package/dot-prop) to select target properties.
 - **Automapping**: Automatically maps properties with matching names and types, saving you from defining obvious mappings.
 - **Built-in Transformations**: Easily transform values during mapping, from simple calculations to complex asynchronous operations.
 - **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x in benchmarks) for I/O-heavy transformations.
