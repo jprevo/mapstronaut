@@ -16,7 +16,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
   }
 
   map(source: TSource, target?: TTarget): TTarget {
-    if (!source || typeof source !== "object") {
+    if (!this.isValidSource(source)) {
       throw new Error("Source must be an object");
     }
 
@@ -28,42 +28,21 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
       return {} as TTarget;
     }
 
-    const result = target;
-    const sourceKeys = Object.keys(source);
-    const targetKeys = Object.keys(target);
+    return this.mergeObjects(
+      source as UnknownSource,
+      target as UnknownTarget,
+    ) as TTarget;
+  }
 
-    for (const key of sourceKeys) {
-      if (targetKeys.includes(key)) {
-        const sourceValue = (source as UnknownSource)[key];
-
-        if (this.shouldMapProperty(key, sourceValue, target)) {
-          const targetValue = (target as UnknownTarget)[key];
-
-          if (this.areBothObjects(sourceValue, targetValue)) {
-            (result as UnknownTarget)[key] = this.deepMerge(
-              targetValue,
-              sourceValue,
-            );
-          } else if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-            (result as UnknownTarget)[key] = this.applyArrayStrategy(
-              key,
-              this.configuration.automapArrayStrategy,
-              targetValue,
-              sourceValue,
-            );
-          } else {
-            (result as UnknownTarget)[key] = sourceValue;
-          }
-        }
-      }
-    }
-
-    return result;
+  private isValidSource(source: unknown): source is object {
+    return (
+      source !== null && source !== undefined && typeof source === "object"
+    );
   }
 
   private shouldMapProperty(
     key: string,
-    sourceValue: UnknownSource,
+    sourceValue: unknown,
     target: UnknownTarget,
   ): boolean {
     if (sourceValue === undefined) {
@@ -75,73 +54,98 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     }
 
     if (target && key in target) {
-      const targetValue = (target as UnknownTarget)[key];
-
-      if (
-        sourceValue !== null &&
-        targetValue !== null &&
-        targetValue !== undefined &&
-        typeof sourceValue !== typeof targetValue
-      ) {
-        return false;
-      }
+      const targetValue = target[key];
+      return this.areTypesCompatible(sourceValue, targetValue);
     }
 
     return true;
   }
 
-  private deepMerge(target: any, source: any): any {
-    const result = { ...target };
+  private areTypesCompatible(
+    sourceValue: unknown,
+    targetValue: unknown,
+  ): boolean {
+    if (
+      sourceValue === null ||
+      targetValue === null ||
+      targetValue === undefined
+    ) {
+      return true;
+    }
 
-    for (const key in source) {
-      if (source.hasOwnProperty(key) && key in result) {
-        const sourceValue = source[key];
-        const targetValue = result[key];
+    return typeof sourceValue === typeof targetValue;
+  }
 
-        if (!this.shouldMapProperty(key, sourceValue, result)) {
-          continue;
-        }
+  private mergeObjects(
+    source: UnknownSource,
+    target: UnknownTarget,
+  ): UnknownTarget {
+    const sourceKeys = Object.keys(source);
+    const targetKeys = Object.keys(target);
 
-        if (this.areBothObjects(sourceValue, targetValue)) {
-          result[key] = this.deepMerge(targetValue, sourceValue);
-        } else if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
-          result[key] = this.applyArrayStrategy(
-            key,
-            this.configuration.automapArrayStrategy,
-            targetValue,
-            sourceValue,
-          );
-        } else {
-          result[key] = sourceValue;
-        }
+    for (const key of sourceKeys) {
+      if (targetKeys.includes(key)) {
+        this.mapProperty(key, source, target);
       }
     }
 
-    return result;
+    return target;
+  }
+
+  private mapProperty(
+    key: string,
+    source: UnknownSource,
+    target: UnknownTarget,
+  ): void {
+    const sourceValue = source[key];
+
+    if (!this.shouldMapProperty(key, sourceValue, target)) {
+      return;
+    }
+
+    const targetValue = target[key];
+    target[key] = this.getMappedValue(key, sourceValue, targetValue);
+  }
+
+  private getMappedValue(
+    key: string,
+    sourceValue: unknown,
+    targetValue: unknown,
+  ): unknown {
+    if (this.areBothObjects(sourceValue, targetValue)) {
+      // For nested objects, we need to create a new merged object to avoid mutating the original
+      const mergedTarget = { ...(targetValue as UnknownTarget) };
+      return this.mergeObjects(sourceValue as UnknownSource, mergedTarget);
+    }
+
+    if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
+      return this.applyArrayStrategy(
+        key,
+        this.configuration.automapArrayStrategy,
+        targetValue,
+        sourceValue,
+      );
+    }
+
+    return sourceValue;
   }
 
   private applyArrayStrategy(
     key: string,
     strategy: AutomapArrayStrategyFunction | AutomapArrayStrategy | undefined,
-    targetArray: any[],
-    sourceArray: any[],
-  ): any[] {
+    targetArray: unknown[],
+    sourceArray: unknown[],
+  ): unknown[] {
     if (typeof strategy === "function") {
       return strategy(key, sourceArray, targetArray);
     }
 
     switch (strategy) {
       case AutomapArrayStrategy.Concatenate:
-        return [...targetArray, ...sourceArray];
+        return this.concatenateArrays(targetArray, sourceArray);
 
       case AutomapArrayStrategy.Merge:
-        const result = [...targetArray];
-        for (let i = 0; i < sourceArray.length; i++) {
-          if (sourceArray[i] !== undefined) {
-            result[i] = sourceArray[i];
-          }
-        }
-        return result;
+        return this.mergeArraysByIndex(targetArray, sourceArray);
 
       case AutomapArrayStrategy.Replace:
       default:
@@ -149,10 +153,30 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     }
   }
 
-  private areBothObjects(sourceValue: any, targetValue: any) {
+  private concatenateArrays(
+    targetArray: unknown[],
+    sourceArray: unknown[],
+  ): unknown[] {
+    return [...targetArray, ...sourceArray];
+  }
+
+  private mergeArraysByIndex(
+    targetArray: unknown[],
+    sourceArray: unknown[],
+  ): unknown[] {
+    const result = [...targetArray];
+    for (let i = 0; i < sourceArray.length; i++) {
+      if (sourceArray[i] !== undefined) {
+        result[i] = sourceArray[i];
+      }
+    }
+    return result;
+  }
+
+  private areBothObjects(sourceValue: unknown, targetValue: unknown): boolean {
     return (
-      sourceValue &&
-      targetValue &&
+      sourceValue !== null &&
+      targetValue !== null &&
       typeof sourceValue === "object" &&
       typeof targetValue === "object" &&
       !Array.isArray(sourceValue) &&
