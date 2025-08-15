@@ -27,7 +27,11 @@
     "object-mapper",
     "mapping",
     "automapping",
-    "object"
+    "object",
+    "data transformation",
+    "mapper",
+    "jsonpath",
+    "transform"
   ],
   "author": "Jonathan Prevost",
   "license": "MIT",
