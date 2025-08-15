@@ -1,4 +1,3 @@
-import { JSONPath } from "jsonpath-plus";
 import type { UnknownSource, UnknownTarget } from "./generic.js";
 
 export type MapperOptions = {
@@ -7,8 +6,9 @@ export type MapperOptions = {
   automapCheckType: boolean; // default false, should automapping check types ?
   skipNull: boolean; // default false, should null values in source not be mapped ?
   skipUndefined: boolean; // default true, should undefined values in source not be mapper ?
-  jsonPathOptions?: any;
-  parallelRun: boolean; // default false, on available on AsyncMapper
+  jsonPathOptions?: any; // json path plus specific options
+  parallelRun: boolean; // default false, only available on AsyncMapper
+  parallelJobsLimit: number; // default 0 (unlimited), restricts the number of parallel jobs running
 };
 
 export type Rule = RuleArray | RuleObject;

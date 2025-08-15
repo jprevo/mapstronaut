@@ -679,6 +679,509 @@ describe("Parallel Async Mapping", () => {
     });
   });
 
+  describe("Parallel Jobs Limit", () => {
+    it("should behave like unlimited when parallelJobsLimit is 0", async () => {
+      const source = {
+        mission1: "apollo",
+        mission2: "gemini",
+        mission3: "mercury",
+      };
+
+      let startTimes: number[] = [];
+
+      const structure: AsyncStructure = [
+        {
+          source: "mission1",
+          target: "result1",
+          transform: async (data: string) => {
+            startTimes.push(Date.now());
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "mission2",
+          target: "result2",
+          transform: async (data: string) => {
+            startTimes.push(Date.now());
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "mission3",
+          target: "result3",
+          transform: async (data: string) => {
+            startTimes.push(Date.now());
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            return data.toUpperCase();
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 0, // unlimited
+      });
+
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        result1: "APOLLO",
+        result2: "GEMINI",
+        result3: "MERCURY",
+      });
+
+      // All should start almost simultaneously with unlimited concurrency
+      const maxStartTimeDiff =
+        Math.max(...startTimes) - Math.min(...startTimes);
+      assert(
+        maxStartTimeDiff < 20,
+        "All tasks should start almost simultaneously with unlimited concurrency",
+      );
+    });
+
+    it("should run sequentially when parallelJobsLimit is 1", async () => {
+      const source = {
+        planet1: "mars",
+        planet2: "venus",
+        planet3: "jupiter",
+      };
+
+      let completionOrder: string[] = [];
+
+      const structure: AsyncStructure = [
+        {
+          source: "planet1",
+          target: "exploration1",
+          transform: async (data: string) => {
+            await new Promise((resolve) => setTimeout(resolve, 40));
+            completionOrder.push("first");
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+        {
+          source: "planet2",
+          target: "exploration2",
+          transform: async (data: string) => {
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            completionOrder.push("second");
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+        {
+          source: "planet3",
+          target: "exploration3",
+          transform: async (data: string) => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            completionOrder.push("third");
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 1, // sequential execution
+      });
+
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        exploration1: "Exploring MARS",
+        exploration2: "Exploring VENUS",
+        exploration3: "Exploring JUPITER",
+      });
+
+      // With limit 1, they should run sequentially in order
+      assert.deepEqual(completionOrder, ["first", "second", "third"]);
+    });
+
+    it("should respect parallelJobsLimit of 2", async () => {
+      const source = {
+        star1: "sirius",
+        star2: "vega",
+        star3: "arcturus",
+        star4: "canopus",
+        star5: "rigel",
+      };
+
+      let activeJobs = 0;
+      let maxConcurrentJobs = 0;
+      let jobStarts: string[] = [];
+
+      const structure: AsyncStructure = [
+        {
+          source: "star1",
+          target: "constellation1",
+          transform: async (data: string) => {
+            activeJobs++;
+            maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs);
+            jobStarts.push("star1");
+            await new Promise((resolve) => setTimeout(resolve, 50));
+            activeJobs--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "star2",
+          target: "constellation2",
+          transform: async (data: string) => {
+            activeJobs++;
+            maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs);
+            jobStarts.push("star2");
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            activeJobs--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "star3",
+          target: "constellation3",
+          transform: async (data: string) => {
+            activeJobs++;
+            maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs);
+            jobStarts.push("star3");
+            await new Promise((resolve) => setTimeout(resolve, 40));
+            activeJobs--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "star4",
+          target: "constellation4",
+          transform: async (data: string) => {
+            activeJobs++;
+            maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs);
+            jobStarts.push("star4");
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeJobs--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "star5",
+          target: "constellation5",
+          transform: async (data: string) => {
+            activeJobs++;
+            maxConcurrentJobs = Math.max(maxConcurrentJobs, activeJobs);
+            jobStarts.push("star5");
+            await new Promise((resolve) => setTimeout(resolve, 35));
+            activeJobs--;
+            return data.toUpperCase();
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 2,
+      });
+
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        constellation1: "SIRIUS",
+        constellation2: "VEGA",
+        constellation3: "ARCTURUS",
+        constellation4: "CANOPUS",
+        constellation5: "RIGEL",
+      });
+
+      // Should never exceed the limit of 2 concurrent jobs
+      assert(
+        maxConcurrentJobs <= 2,
+        `Max concurrent jobs (${maxConcurrentJobs}) should not exceed limit (2)`,
+      );
+
+      // First two jobs should start almost immediately
+      assert.equal(jobStarts[0], "star1");
+      assert.equal(jobStarts[1], "star2");
+    });
+
+    it("should work with parallelJobsLimit and async filters", async () => {
+      const source = {
+        commanders: [
+          { name: "luna command", experience: 5 },
+          { name: "solar leader", experience: 2 },
+          { name: "cosmic chief", experience: 8 },
+          { name: "stellar boss", experience: 3 },
+        ],
+      };
+
+      let concurrentFilters = 0;
+      let maxConcurrentFilters = 0;
+
+      const structure: AsyncStructure = [
+        {
+          source: "commanders[0].name",
+          target: "qualified1",
+          filter: async (data, source) => {
+            concurrentFilters++;
+            maxConcurrentFilters = Math.max(
+              maxConcurrentFilters,
+              concurrentFilters,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            concurrentFilters--;
+            return source.commanders[0].experience >= 3;
+          },
+        },
+        {
+          source: "commanders[1].name",
+          target: "qualified2",
+          filter: async (data, source) => {
+            concurrentFilters++;
+            maxConcurrentFilters = Math.max(
+              maxConcurrentFilters,
+              concurrentFilters,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 25));
+            concurrentFilters--;
+            return source.commanders[1].experience >= 3;
+          },
+        },
+        {
+          source: "commanders[2].name",
+          target: "qualified3",
+          filter: async (data, source) => {
+            concurrentFilters++;
+            maxConcurrentFilters = Math.max(
+              maxConcurrentFilters,
+              concurrentFilters,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            concurrentFilters--;
+            return source.commanders[2].experience >= 3;
+          },
+        },
+        {
+          source: "commanders[3].name",
+          target: "qualified4",
+          filter: async (data, source) => {
+            concurrentFilters++;
+            maxConcurrentFilters = Math.max(
+              maxConcurrentFilters,
+              concurrentFilters,
+            );
+            await new Promise((resolve) => setTimeout(resolve, 35));
+            concurrentFilters--;
+            return source.commanders[3].experience >= 3;
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 2,
+      });
+
+      const result = await mapper.map(source);
+
+      // Only commanders with experience >= 3 should be mapped
+      assert.deepEqual(result, {
+        qualified1: "luna command", // experience 5 >= 3
+        qualified3: "cosmic chief", // experience 8 >= 3
+        qualified4: "stellar boss", // experience 3 >= 3
+        // qualified2 should not exist because experience 2 < 3
+      });
+
+      assert(
+        maxConcurrentFilters <= 2,
+        `Max concurrent filters (${maxConcurrentFilters}) should not exceed limit (2)`,
+      );
+    });
+
+    it("should handle errors correctly with parallelJobsLimit", async () => {
+      const source = {
+        mission1: "success",
+        mission2: "failure",
+        mission3: "success",
+      };
+
+      let activeTransforms = 0;
+
+      const structure: AsyncStructure = [
+        {
+          source: "mission1",
+          target: "result1",
+          transform: async (data: string) => {
+            activeTransforms++;
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeTransforms--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "mission2",
+          target: "result2",
+          transform: async (data: string) => {
+            activeTransforms++;
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            activeTransforms--;
+            throw new Error("Mission failed during transform");
+          },
+        },
+        {
+          source: "mission3",
+          target: "result3",
+          transform: async (data: string) => {
+            activeTransforms++;
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            activeTransforms--;
+            return data.toUpperCase();
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 2,
+      });
+
+      await assert.rejects(
+        async () => await mapper.map(source),
+        /Mission failed during transform/,
+      );
+    });
+
+    it("should work with parallelJobsLimit and mapObjectAsync", async () => {
+      const source = {
+        galaxy1: "milky way",
+        galaxy2: "andromeda",
+        galaxy3: "whirlpool",
+      };
+
+      let activeTasks = 0;
+      let maxActiveTasks = 0;
+
+      const structure: AsyncStructure = [
+        {
+          source: "galaxy1",
+          target: "explored1",
+          transform: async (data: string) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 25));
+            activeTasks--;
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+        {
+          source: "galaxy2",
+          target: "explored2",
+          transform: async (data: string) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 30));
+            activeTasks--;
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+        {
+          source: "galaxy3",
+          target: "explored3",
+          transform: async (data: string) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeTasks--;
+            return `Exploring ${data.toUpperCase()}`;
+          },
+        },
+      ];
+
+      const result = await mapObjectAsync(structure, source, undefined, {
+        parallelRun: true,
+        parallelJobsLimit: 2,
+      });
+
+      assert.deepEqual(result, {
+        explored1: "Exploring MILKY WAY",
+        explored2: "Exploring ANDROMEDA",
+        explored3: "Exploring WHIRLPOOL",
+      });
+
+      assert(
+        maxActiveTasks <= 2,
+        `Max active tasks (${maxActiveTasks}) should not exceed limit (2)`,
+      );
+    });
+
+    it("should respect limit with mixed async operations", async () => {
+      const source = {
+        spacecraft: "voyager",
+        fuel: 85,
+        crew: 6,
+        mission: "exploration",
+      };
+
+      let activeTasks = 0;
+      let maxActiveTasks = 0;
+
+      const structure: AsyncStructure = [
+        {
+          source: "spacecraft",
+          target: "vehicle",
+          filter: async (data: string) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 15));
+            activeTasks--;
+            return data.length > 5;
+          },
+          transform: async (data: string) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 20));
+            activeTasks--;
+            return data.toUpperCase();
+          },
+        },
+        {
+          source: "fuel",
+          target: "fuelStatus",
+          failOn: async (data: number) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            activeTasks--;
+            return data < 80;
+          },
+        },
+        {
+          constant: "ACTIVE_MISSION",
+          target: "status",
+          filter: async (data, source) => {
+            activeTasks++;
+            maxActiveTasks = Math.max(maxActiveTasks, activeTasks);
+            await new Promise((resolve) => setTimeout(resolve, 25));
+            activeTasks--;
+            return source.mission === "exploration";
+          },
+        },
+      ];
+
+      const mapper = new AsyncMapper(structure, {
+        parallelRun: true,
+        parallelJobsLimit: 2,
+      });
+
+      const result = await mapper.map(source);
+
+      assert.deepEqual(result, {
+        vehicle: "VOYAGER",
+        fuelStatus: 85,
+        status: "ACTIVE_MISSION",
+      });
+
+      assert(
+        maxActiveTasks <= 2,
+        `Max active tasks (${maxActiveTasks}) should not exceed limit (2)`,
+      );
+    });
+  });
+
   describe("Regression Tests", () => {
     it("should maintain backward compatibility when parallelRun is undefined", async () => {
       const source = { star: "proxima centauri" };
@@ -737,6 +1240,31 @@ describe("Parallel Async Mapping", () => {
       assert.equal(result.objective, "EXPLORE");
       assert.equal(result.name, "interstellar probe");
       assert.equal(result.status, "active");
+    });
+
+    it("should maintain backward compatibility with parallelJobsLimit default", async () => {
+      const source = { nebula: "orion" };
+      const structure: AsyncStructure = [
+        {
+          source: "nebula",
+          target: "cosmicObject",
+          transform: async (data: string) => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return data.toUpperCase();
+          },
+        },
+      ];
+
+      // parallelJobsLimit should default to 0 (unlimited)
+      const mapper = new AsyncMapper(structure, { parallelRun: true });
+      const options = mapper.getOptions();
+
+      assert.equal(options.parallelJobsLimit, 0);
+
+      const result = await mapper.map(source);
+      assert.deepEqual(result, {
+        cosmicObject: "ORION",
+      });
     });
   });
 });

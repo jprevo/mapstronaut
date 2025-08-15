@@ -34,10 +34,10 @@ export class AsyncMapper<
     result = this.applyAutomap(source, result);
 
     if (this.options.parallelRun) {
-      await Promise.all(
-        this.asyncStructure.map((rule) =>
-          this.processRule(rule, source, result),
-        ),
+      await this.executeWithLimitedConcurrency(
+        this.asyncStructure,
+        (rule) => this.processRule(rule, source, result),
+        this.options.parallelJobsLimit,
       );
     } else {
       for (const rule of this.asyncStructure) {
@@ -46,6 +46,36 @@ export class AsyncMapper<
     }
 
     return result;
+  }
+
+  private async executeWithLimitedConcurrency(
+    rules: AsyncRule[],
+    processRule: (rule: AsyncRule) => Promise<void>,
+    limit: number,
+  ): Promise<void> {
+    if (limit <= 0) {
+      // Unlimited concurrency - use existing Promise.all approach
+      await Promise.all(rules.map((rule) => processRule(rule)));
+      return;
+    }
+
+    // Limited concurrency using a pool pattern
+    const executing = new Set<Promise<void>>();
+
+    for (const rule of rules) {
+      const promise = processRule(rule).finally(() => {
+        executing.delete(promise);
+      });
+
+      executing.add(promise);
+
+      if (executing.size >= limit) {
+        await Promise.race(executing);
+      }
+    }
+
+    // Wait for all remaining promises to complete
+    await Promise.all(executing);
   }
 
   private async processRule(

@@ -32,6 +32,7 @@ export abstract class BaseMapper<
       skipUndefined: options?.skipUndefined ?? true,
       jsonPathOptions: options?.jsonPathOptions ?? null,
       parallelRun: options?.parallelRun ?? false,
+      parallelJobsLimit: options?.parallelJobsLimit ?? 0,
     };
   }
 
