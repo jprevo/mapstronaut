@@ -12,10 +12,9 @@ Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for tran
 - **Declarative Approach**: Define your mapping structure as an array of rules. It's easy to read, understand, and maintain.
 - **Advanced Data Selection**: Uses  [JSONPath](https://www.npmjs.com/package/jsonpath-plus) to precisely select source properties, even from complex nested objects and arrays. Uses [dot-prop](https://www.npmjs.com/package/dot-prop) to select target properties.
 - **Automapping**: Automatically maps properties with matching names and types, saving you from defining obvious mappings.
-- **Built-in Transformations**: Easily transform values during mapping, from simple calculations to complex asynchronous operations.
-- **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x in benchmarks) for I/O-heavy transformations.
+- **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost for I/O-heavy transformations.
 
-_Developer's note: I used Typescript for a long time before switching to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
+_Developer's note: I used Typescript for a long time before having to switch to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
 
 ## Installation
 
