@@ -2,7 +2,7 @@
 
 Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for transforming objects. It simplifies complex object manipulation by defining mapping rules, letting you focus on the data, not the boilerplate code.
 
-![Tests 234/234](https://img.shields.io/badge/tests-234/234-green)
+![Tests 258/258](https://img.shields.io/badge/tests-258/258-green)
 ![Coverage 99%](https://img.shields.io/badge/coverage-99%25-green)
 ![Types Provided](https://img.shields.io/badge/types-provided-blue)
 ![Licence MIT](https://img.shields.io/badge/licence-MIT-blue)
@@ -15,7 +15,7 @@ Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for tran
 - **Built-in Transformations**: Easily transform values during mapping, from simple calculations to complex asynchronous operations.
 - **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost (up to ~4x in benchmarks) for I/O-heavy transformations.
 
-*Developer's note: I used Typescript for a long time before switching to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut.*
+_Developer's note: I used Typescript for a long time before switching to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
 
 ## Installation
 
@@ -161,7 +161,6 @@ const result = await mapObjectAsync(structure, astronaut);
 }
 */
 ```
-
 
 ## Documentation
 

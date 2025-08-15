@@ -157,6 +157,40 @@ describe("Automapper", function () {
     });
   });
 
+  describe("structure management", function () {
+    it("should get structure copy", function () {
+      const structure = [
+        { source: "name", target: "fullName" },
+        { source: "age", target: "years" },
+      ];
+      const automapper = new Automapper({}, structure);
+      const struct1 = automapper.getStructure();
+      const struct2 = automapper.getStructure();
+
+      assert.notStrictEqual(struct1, struct2); // Different arrays
+      assert.deepStrictEqual(struct1, struct2); // Same content
+    });
+
+    it("should set structure", function () {
+      const automapper = new Automapper();
+      const newStructure = [
+        { source: "name", target: "title" },
+      ];
+
+      automapper.setStructure(newStructure);
+      const structure = automapper.getStructure();
+
+      assert.deepStrictEqual(structure, newStructure);
+    });
+
+    it("should handle empty structure", function () {
+      const automapper = new Automapper({}, []);
+      const structure = automapper.getStructure();
+
+      assert.deepStrictEqual(structure, []);
+    });
+  });
+
   describe("complex objects", function () {
     it("should map nested objects when properties match", function () {
       const automapper = new Automapper();

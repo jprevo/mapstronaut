@@ -216,6 +216,33 @@ describe("Automapper - Deep Merge", () => {
         assert.strictEqual(result.federation.headquarters.established, 2161);
         assert.strictEqual(result.federation.members, 150);
       });
+
+      it("should handle PreserveTarget strategy when values are not objects", () => {
+        const structure: Rule[] = [
+          {
+            target: "shipName",
+            automapStrategy: AutomapSimpleStrategy.PreserveTarget,
+          },
+        ];
+
+        const source = {
+          shipName: "Enterprise",
+          crewCount: 430,
+        };
+
+        const target = {
+          shipName: "Voyager", // should be preserved via strategy
+          crewCount: 150, // should use source (no strategy)
+        };
+
+        const automapper = new Automapper({}, structure);
+        const result = automapper.map(source, target);
+
+        // When both values are primitives and strategy is PreserveTarget, 
+        // applyStrategy returns sourceValue (line 215)
+        assert.strictEqual(result.shipName, "Enterprise");
+        assert.strictEqual(result.crewCount, 430);
+      });
     });
 
     describe("PreserveSource strategy", () => {
@@ -358,6 +385,72 @@ describe("Automapper - Deep Merge", () => {
         // crew: custom function
         assert.strictEqual(result.crew.total, 580);
         assert.strictEqual(result.crew.departments, 14);
+      });
+    });
+
+    describe("unknown strategy handling", () => {
+      it("should handle unknown strategy by defaulting to source value", () => {
+        const structure: Rule[] = [
+          {
+            target: "ship",
+            automapStrategy: "unknown_strategy" as any, // force unknown strategy
+          },
+        ];
+
+        const source = {
+          ship: {
+            name: "Enterprise",
+            crew: 430,
+          },
+        };
+
+        const target = {
+          ship: {
+            name: "Voyager",
+            registry: "NCC-74656",
+          },
+        };
+
+        const automapper = new Automapper({}, structure);
+        const result = automapper.map(source, target);
+
+        // Unknown strategy falls through to default case (line 217) which returns sourceValue
+        // This replaces the entire ship object with the source ship object
+        assert.strictEqual(result.ship.name, "Enterprise");
+        assert.strictEqual(result.ship.crew, 430);
+        assert.strictEqual(result.ship.registry, undefined); // target registry is lost
+      });
+    });
+
+    describe("conflict resolution without strategy", () => {
+      it("should default to source value when no strategy is defined", () => {
+        // No structure provided - should use default conflict resolution
+        const source = {
+          ship: {
+            name: "Enterprise",
+            crew: 430,
+          },
+          mission: "exploration",
+        };
+
+        const target = {
+          ship: {
+            name: "Voyager", // conflict - should be resolved to source
+            registry: "NCC-74656", // no conflict - should be preserved
+          },
+          mission: "rescue", // conflict - should be resolved to source
+          captain: "Janeway", // no conflict - should be preserved
+        };
+
+        const automapper = new Automapper();
+        const result = automapper.map(source, target);
+
+        // No strategy defined, should use default behavior (source wins conflicts)
+        assert.strictEqual(result.ship.name, "Enterprise"); // source wins
+        assert.strictEqual(result.ship.crew, 430); // from source
+        assert.strictEqual(result.ship.registry, "NCC-74656"); // preserved from target
+        assert.strictEqual(result.mission, "exploration"); // source wins
+        assert.strictEqual(result.captain, "Janeway"); // preserved from target
       });
     });
   });
