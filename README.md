@@ -155,9 +155,9 @@ const result = await mapper.map(spaceMissionData);
 
 - [Basic Usage](./docs/basic-usage.md)
 - [Options reference](./docs/options.md)
-- [Mapping rules (structure)](./docs/structure.md)
-- [JSONPath source properties](./docs/jsonpath.md)
-- [Additional examples](./docs/examples.md)
+- [Mapping rules](./docs/structure.md)
+- [Defining sources](./docs/sources.md)
+- [Defining targets](./docs/targets.md)
 
 ## Contributions
 
