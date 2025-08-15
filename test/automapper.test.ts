@@ -173,9 +173,7 @@ describe("Automapper", function () {
 
     it("should set structure", function () {
       const automapper = new Automapper();
-      const newStructure = [
-        { source: "name", target: "title" },
-      ];
+      const newStructure = [{ source: "name", target: "title" }];
 
       automapper.setStructure(newStructure);
       const structure = automapper.getStructure();

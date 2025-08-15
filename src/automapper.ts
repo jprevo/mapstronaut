@@ -5,7 +5,7 @@ import type {
   RuleObject,
   AutomapStrategyFunction,
 } from "./types/mapper.js";
-import { AutomapSimpleStrategy } from "./types/mapper.js";
+import { AutomapSimpleStrategy, AutomapArrayStrategy } from "./types/mapper.js";
 
 export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
   private configuration: AutomapperConfiguration;
@@ -66,6 +66,22 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
                 targetValue,
                 sourceValue,
               );
+            } else if (
+              Array.isArray(sourceValue) &&
+              Array.isArray(targetValue)
+            ) {
+              // Handle array merging
+              const arrayStrategy = this.findAutomapArrayStrategy(key);
+              if (arrayStrategy) {
+                (result as UnknownTarget)[key] = this.applyArrayStrategy(
+                  arrayStrategy,
+                  targetValue,
+                  sourceValue,
+                );
+              } else {
+                // Default behavior for arrays: replace
+                (result as UnknownTarget)[key] = [...sourceValue];
+              }
             } else {
               // Default: source wins
               (result as UnknownTarget)[key] = sourceValue;
@@ -122,6 +138,19 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
         if (this.areBothObjects(sourceValue, targetValue)) {
           // Recursively deep merge nested objects
           result[key] = this.deepMerge(targetValue, sourceValue);
+        } else if (Array.isArray(sourceValue) && Array.isArray(targetValue)) {
+          // Handle array merging
+          const arrayStrategy = this.findAutomapArrayStrategy(key);
+          if (arrayStrategy) {
+            result[key] = this.applyArrayStrategy(
+              arrayStrategy,
+              targetValue,
+              sourceValue,
+            );
+          } else {
+            // Default behavior for arrays: replace
+            result[key] = [...sourceValue];
+          }
         } else if (targetValue !== undefined && sourceValue !== undefined) {
           // Handle conflict resolution for properties that exist in both
           result[key] = this.resolveConflict(targetValue, sourceValue, key);
@@ -206,6 +235,15 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     propertyKey: string,
   ): any {
     const strategy = this.findAutomapStrategy(propertyKey);
+    const arrayStrategy = this.findAutomapArrayStrategy(propertyKey);
+
+    if (
+      Array.isArray(sourceValue) &&
+      Array.isArray(targetValue) &&
+      arrayStrategy
+    ) {
+      return this.applyArrayStrategy(arrayStrategy, targetValue, sourceValue);
+    }
 
     if (strategy) {
       return this.applyStrategy(strategy, targetValue, sourceValue);
@@ -230,6 +268,50 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
     }
 
     return undefined;
+  }
+
+  private findAutomapArrayStrategy(
+    propertyKey: string,
+  ): AutomapArrayStrategy | undefined {
+    // Look for a rule that targets this property and has an automapArrayStrategy
+    for (const rule of this.structure) {
+      const normalizedRule = this.normalizeRule(rule);
+
+      if (
+        normalizedRule.target === propertyKey &&
+        normalizedRule.automapArrayStrategy
+      ) {
+        return normalizedRule.automapArrayStrategy;
+      }
+    }
+
+    return undefined;
+  }
+
+  private applyArrayStrategy(
+    strategy: AutomapArrayStrategy,
+    targetArray: any[],
+    sourceArray: any[],
+  ): any[] {
+    switch (strategy) {
+      case AutomapArrayStrategy.Concatenate:
+        return [...targetArray, ...sourceArray];
+
+      case AutomapArrayStrategy.Replace:
+        return [...sourceArray];
+
+      case AutomapArrayStrategy.MergeByIndex:
+        const result = [...targetArray];
+        for (let i = 0; i < sourceArray.length; i++) {
+          if (sourceArray[i] !== undefined) {
+            result[i] = sourceArray[i];
+          }
+        }
+        return result;
+
+      default:
+        return [...sourceArray];
+    }
   }
 
   private normalizeRule(rule: Rule): RuleObject {
