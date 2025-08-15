@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Test script to validate code examples in docs/basic-usage.md
+ * Test script to validate code examples in documentation files
  * Dynamically extracts and executes TypeScript code blocks from markdown
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { strict as assert } from "assert";
-import { Mapper, mapObject } from "../index.js";
+import { Mapper, AsyncMapper, mapObject } from "../index.js";
 
 interface CodeBlock {
   section: string;
@@ -67,16 +67,47 @@ function parseMarkdownCodeBlocks(filePath: string): CodeBlock[] {
   return codeBlocks;
 }
 
-function executeCodeBlock(codeBlock: CodeBlock): void {
+async function executeCodeBlock(codeBlock: CodeBlock): Promise<void> {
   try {
     // Create a safe execution context with available imports
     const context = {
       Mapper,
+      AsyncMapper,
       mapObject,
       console,
       assert,
       // Store results for validation
       results: {} as any,
+      // Async helper functions for advanced examples
+      validateSpacecraftCertification: async (name: string) => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        return name.includes("Artemis") || name.includes("Apollo");
+      },
+      calculateOptimalTrajectory: async (destination: string, fuel: number) => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        if (destination === "Moon" && fuel > 70) return "trans-lunar-injection";
+        if (destination === "Mars" && fuel > 90) return "hohmann-transfer";
+        return "earth-orbit-standby";
+      },
+      enrichCrewData: async (crewMember: any) => {
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        return {
+          ...crewMember,
+          certified: crewMember.experience > 1000,
+          missionReady: crewMember.experience > 500,
+        };
+      },
+      assessMissionRisk: async (missionData: any) => {
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        const baseRisk = missionData.riskLevel || 0;
+        const fuelRisk = missionData.spacecraft?.fuel < 70 ? 0.1 : 0;
+        const crewRisk = missionData.crew?.length < 2 ? 0.15 : 0;
+
+        const totalRisk = baseRisk + fuelRisk + crewRisk;
+        if (totalRisk > 0.3) return "high";
+        if (totalRisk > 0.15) return "moderate";
+        return "low";
+      },
     };
 
     // Wrap the code to capture the final result variable
@@ -117,19 +148,29 @@ function executeCodeBlock(codeBlock: CodeBlock): void {
     const executeCode = new Function(
       "context",
       "Mapper",
+      "AsyncMapper",
       "mapObject",
       "console",
       "assert",
       `
       with (context) {
-        ${code}
+        return (async () => {
+          ${code}
+          return context;
+        })();
       }
-      return context;
       `,
     );
 
-    // Execute the code
-    const result = executeCode(context, Mapper, mapObject, console, assert);
+    // Execute the code (now async)
+    const result = await executeCode(
+      context,
+      Mapper,
+      AsyncMapper,
+      mapObject,
+      console,
+      assert,
+    );
 
     // Validate result if we have both actual and expected
     if (
@@ -151,38 +192,51 @@ function executeCodeBlock(codeBlock: CodeBlock): void {
   }
 }
 
-function runTests(): void {
-  console.log("🚀 Running docs/basic-usage.md examples validation...\n");
+async function runTests(): Promise<void> {
+  console.log("🚀 Running documentation examples validation...\n");
 
-  const docsPath = path.resolve(process.cwd(), "docs/basic-usage.md");
+  const docFiles = ["docs/basic-usage.md", "docs/advanced.md"];
+  const allCodeBlocks: (CodeBlock & { file: string })[] = [];
 
-  if (!fs.existsSync(docsPath)) {
-    console.error(`❌ Could not find docs/basic-usage.md at ${docsPath}`);
+  // Parse all documentation files
+  for (const docFile of docFiles) {
+    const docsPath = path.resolve(process.cwd(), docFile);
+
+    if (!fs.existsSync(docsPath)) {
+      console.error(`❌ Could not find ${docFile} at ${docsPath}`);
+      continue;
+    }
+
+    const codeBlocks = parseMarkdownCodeBlocks(docsPath);
+    const blocksWithFile = codeBlocks.map((block) => ({
+      ...block,
+      file: docFile,
+    }));
+    allCodeBlocks.push(...blocksWithFile);
+  }
+
+  if (allCodeBlocks.length === 0) {
+    console.error("❌ No TypeScript code blocks found in documentation files");
     process.exit(1);
   }
 
-  const codeBlocks = parseMarkdownCodeBlocks(docsPath);
-
-  if (codeBlocks.length === 0) {
-    console.error("❌ No TypeScript code blocks found in docs/basic-usage.md");
-    process.exit(1);
-  }
-
-  console.log(`Found ${codeBlocks.length} TypeScript code blocks to test:\n`);
+  console.log(
+    `Found ${allCodeBlocks.length} TypeScript code blocks to test:\n`,
+  );
 
   let passed = 0;
   let failed = 0;
 
-  for (const codeBlock of codeBlocks) {
+  for (const codeBlock of allCodeBlocks) {
     try {
-      executeCodeBlock(codeBlock);
+      await executeCodeBlock(codeBlock);
       console.log(
-        `✅ ${codeBlock.section} (lines ${codeBlock.startLine}-${codeBlock.endLine})`,
+        `✅ ${codeBlock.file}: ${codeBlock.section} (lines ${codeBlock.startLine}-${codeBlock.endLine})`,
       );
       passed++;
     } catch (error) {
       console.error(
-        `❌ ${codeBlock.section} (lines ${codeBlock.startLine}-${codeBlock.endLine})`,
+        `❌ ${codeBlock.file}: ${codeBlock.section} (lines ${codeBlock.startLine}-${codeBlock.endLine})`,
       );
       console.error(
         `   Error: ${error instanceof Error ? error.message : String(error)}\n`,
@@ -194,11 +248,11 @@ function runTests(): void {
   console.log(`\n📊 Test Results:`);
   console.log(`   Passed: ${passed}`);
   console.log(`   Failed: ${failed}`);
-  console.log(`   Total: ${codeBlocks.length}`);
+  console.log(`   Total: ${allCodeBlocks.length}`);
 
   if (failed === 0) {
     console.log(
-      "\n🎉 All code examples in docs/basic-usage.md are working correctly!",
+      "\n🎉 All code examples in documentation files are working correctly!",
     );
     process.exit(0);
   } else {

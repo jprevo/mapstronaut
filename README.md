@@ -14,7 +14,7 @@ Mapstronaut is a lightweight and flexible JavaScript/TypeScript library for tran
 - **Automapping**: Can automatically map properties with matching names and types, saving you from defining obvious mappings.
 - **High-Performance Async**: Supports parallel asynchronous mapping, offering a significant performance boost for I/O-heavy transformations.
 
-_Developer's note: I used Typescript for a long time before having to switch to Java a few years ago. I loved using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
+_Developer's note: I used Typescript for a long time before having to switch to Java a few years ago. I love using the popular object mapper Mapstruct and was inspired by it for Mapstronaut._
 
 ## Installation
 
@@ -160,6 +160,7 @@ const result = await mapper.map(spaceMissionData);
 - [Defining targets](./docs/targets.md)
 - [Async mapping](./docs/async.md)
 - [Automapping](./docs/automapping.md)
+- [Advanced Usage](./docs/advanced.md)
 
 ## Contributions
 
