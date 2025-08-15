@@ -21,7 +21,7 @@ type BaseRuleObject = {
   target: string; // outpath
   constant?: any;
   defaultValue?: any;
-  automapStrategy?: AutomapStrategy | AutomapSimpleStrategy;
+  automapStrategy?: AutomapStrategyFunction | AutomapSimpleStrategy;
 };
 
 export type RuleObject = BaseRuleObject & {
@@ -36,7 +36,7 @@ export type AsyncRuleObject = BaseRuleObject & {
   failOn?: (data: any, source: any, target: any) => boolean | Promise<boolean>;
 };
 
-export type AutomapStrategy = (
+export type AutomapStrategyFunction = (
   source: UnknownSource,
   target: UnknownTarget,
 ) => any;

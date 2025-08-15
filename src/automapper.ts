@@ -1,6 +1,10 @@
 import type { AutomapperConfiguration } from "./types/automapper.js";
 import type { UnknownSource, UnknownTarget } from "./types/generic.js";
-import type { Rule, RuleObject, AutomapStrategy } from "./types/mapper.js";
+import type {
+  Rule,
+  RuleObject,
+  AutomapStrategyFunction,
+} from "./types/mapper.js";
 import { AutomapSimpleStrategy } from "./types/mapper.js";
 
 export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
@@ -141,7 +145,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
   private deepMergeWithStrategy(
     target: any,
     source: any,
-    strategy: AutomapSimpleStrategy | AutomapStrategy,
+    strategy: AutomapSimpleStrategy | AutomapStrategyFunction,
   ): any {
     const result = { ...target };
 
@@ -197,7 +201,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
   }
 
   private applyStrategy(
-    strategy: AutomapStrategy | AutomapSimpleStrategy,
+    strategy: AutomapStrategyFunction | AutomapSimpleStrategy,
     targetValue: any,
     sourceValue: any,
   ): any {
@@ -234,7 +238,7 @@ export class Automapper<TSource = UnknownSource, TTarget = UnknownTarget> {
 
   private findAutomapStrategy(
     propertyKey: string,
-  ): AutomapStrategy | AutomapSimpleStrategy | undefined {
+  ): AutomapStrategyFunction | AutomapSimpleStrategy | undefined {
     // Look for a rule that targets this property and has an automapStrategy
     for (const rule of this.structure) {
       const normalizedRule = this.normalizeRule(rule);
