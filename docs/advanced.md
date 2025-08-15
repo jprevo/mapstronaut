@@ -241,10 +241,3 @@ console.log(mappedStation.crew); // 7
 console.log(mappedStation.altitude); // 408
 console.log(mappedStation.operational); // true
 ```
-
-This approach is particularly useful when:
-
-- You need to maintain class methods and behavior after mapping
-- Working with existing class instances that need data updates
-- Integrating with object-oriented codebases
-- Preserving type information and method bindings
